@@ -17,20 +17,20 @@ except ImportError:
     FastMCP = None
 
 from .parser import EmailParser, EmailContent
-from .ai_integration import OllamaEmailAnalyzer, create_ai_analyzer
 
 logger = logging.getLogger(__name__)
 
 class EmailParserMCPServer:
     """MCP Server for Email Parsing"""
     
-    def __init__(self, name: str = "email-parser"):
+    def __init__(self, name: str = "email-parser", use_ai: bool = True, ai_model: str = "gemini-1.5-flash", use_local: bool = False):
         if FastMCP is None:
             raise ImportError("fastmcp is required. Install with: uv pip install fastmcp")
         
         self.mcp = FastMCP(name)
-        self.parser = EmailParser()
-        self.ai_analyzer = create_ai_analyzer()  # Optional AI integration
+        self.parser = EmailParser(use_ai=use_ai, ai_model=ai_model, use_local=use_local)
+        self.use_ai = use_ai
+        self.use_local = use_local
         self._setup_tools()
         self._setup_resources()
         self._setup_prompts()
@@ -211,7 +211,7 @@ class EmailParserMCPServer:
         @self.mcp.tool()
         def extract_entities_from_text(text: str) -> Dict[str, List[str]]:
             """
-            Extract entities from arbitrary text using email parser patterns.
+            Extract entities from arbitrary text using AI-powered extraction or regex patterns.
             
             Args:
                 text: Text content to analyze
@@ -220,179 +220,15 @@ class EmailParserMCPServer:
                 Dictionary of extracted entities by type
             """
             try:
-                entities = self.parser._extract_entities(text)
+                entities = self.parser.extract_entities_from_text(text)
+                # Add AI enhancement indicator if AI was used
+                if self.use_ai and hasattr(self.parser, 'ai_extractor') and self.parser.ai_extractor:
+                    entities['_ai_enhanced'] = ['true']
+                else:
+                    entities['_ai_enhanced'] = ['false']
                 return entities
             except Exception as e:
                 logger.error(f"Error extracting entities: {e}")
-                return {"error": str(e)}
-        
-        @self.mcp.tool()
-        def ai_analyze_email_file(file_path: str) -> Dict[str, Any]:
-            """
-            Perform AI-powered analysis of a single .msg email file using Ollama Phi3.
-            
-            Args:
-                file_path: Path to the .msg email file
-                
-            Returns:
-                AI analysis including summary, sentiment, categories, priority, insights, and action items
-            """
-            try:
-                if not self.ai_analyzer:
-                    return {"error": "AI analysis not available. Ensure Ollama is running with Phi3 model."}
-                
-                path = Path(file_path)
-                if not path.exists():
-                    return {"error": f"File not found: {file_path}"}
-                
-                if not path.suffix.lower() == '.msg':
-                    return {"error": f"Unsupported file type: {path.suffix}"}
-                
-                # Parse email first
-                email_content = self.parser.parse_msg_file(path)
-                if email_content is None:
-                    return {"error": "Failed to parse email file"}
-                
-                # Perform AI analysis
-                ai_result = self.ai_analyzer.analyze_email(email_content)
-                if ai_result is None:
-                    return {"error": "AI analysis failed"}
-                
-                # Combine traditional parsing with AI analysis
-                return {
-                    "file": str(path.name),
-                    "traditional_analysis": {
-                        "subject": email_content.subject,
-                        "sender": email_content.sender,
-                        "categories": email_content.categories,
-                        "correlation_score": email_content.correlation_score,
-                        "extracted_entities": email_content.extracted_entities
-                    },
-                    "ai_analysis": {
-                        "summary": ai_result.summary,
-                        "categories": ai_result.categories,
-                        "sentiment": ai_result.sentiment,
-                        "priority_score": ai_result.priority_score,
-                        "key_insights": ai_result.key_insights,
-                        "action_items": ai_result.action_items,
-                        "confidence": ai_result.confidence,
-                        "model_used": ai_result.model_used
-                    }
-                }
-                
-            except Exception as e:
-                logger.error(f"Error in AI email analysis: {e}")
-                return {"error": str(e)}
-        
-        @self.mcp.tool()
-        def ai_analyze_text(text: str) -> Dict[str, Any]:
-            """
-            Perform AI-powered analysis of arbitrary text using Ollama Phi3.
-            
-            Args:
-                text: Text content to analyze
-                
-            Returns:
-                AI analysis including summary, sentiment, categories, priority, insights, and action items
-            """
-            try:
-                if not self.ai_analyzer:
-                    return {"error": "AI analysis not available. Ensure Ollama is running with Phi3 model."}
-                
-                result = self.ai_analyzer.analyze_text(text)
-                return result
-                
-            except Exception as e:
-                logger.error(f"Error in AI text analysis: {e}")
-                return {"error": str(e)}
-        
-        @self.mcp.tool()
-        def ai_smart_categorize_folder(folder_path: str) -> Dict[str, Any]:
-            """
-            Perform AI-powered categorization of all emails in a folder using Ollama Phi3.
-            
-            Args:
-                folder_path: Path to folder containing .msg files
-                
-            Returns:
-                Smart categorization results with AI insights
-            """
-            try:
-                if not self.ai_analyzer:
-                    return {"error": "AI analysis not available. Ensure Ollama is running with Phi3 model."}
-                
-                folder = Path(folder_path)
-                if not folder.exists() or not folder.is_dir():
-                    return {"error": f"Folder not found: {folder_path}"}
-                
-                msg_files = list(folder.glob("*.msg"))
-                if not msg_files:
-                    return {"error": f"No .msg files found in {folder_path}"}
-                
-                results = {
-                    "total_files": len(msg_files),
-                    "processed": 0,
-                    "failed": 0,
-                    "ai_categories": {},
-                    "sentiment_distribution": {},
-                    "priority_distribution": {"low": 0, "medium": 0, "high": 0, "critical": 0},
-                    "emails": []
-                }
-                
-                for msg_file in msg_files:
-                    try:
-                        email_content = self.parser.parse_msg_file(msg_file)
-                        if email_content:
-                            ai_result = self.ai_analyzer.analyze_email(email_content)
-                            if ai_result:
-                                results["processed"] += 1
-                                
-                                # Update category statistics
-                                for category in ai_result.categories:
-                                    results["ai_categories"][category] = \
-                                        results["ai_categories"].get(category, 0) + 1
-                                
-                                # Update sentiment distribution
-                                sentiment = ai_result.sentiment
-                                results["sentiment_distribution"][sentiment] = \
-                                    results["sentiment_distribution"].get(sentiment, 0) + 1
-                                
-                                # Update priority distribution
-                                if ai_result.priority_score >= 0.9:
-                                    priority_level = "critical"
-                                elif ai_result.priority_score >= 0.7:
-                                    priority_level = "high"
-                                elif ai_result.priority_score >= 0.4:
-                                    priority_level = "medium"
-                                else:
-                                    priority_level = "low"
-                                
-                                results["priority_distribution"][priority_level] += 1
-                                
-                                # Add email summary
-                                results["emails"].append({
-                                    "file": msg_file.name,
-                                    "subject": email_content.subject,
-                                    "ai_summary": ai_result.summary,
-                                    "ai_categories": ai_result.categories,
-                                    "sentiment": ai_result.sentiment,
-                                    "priority_score": ai_result.priority_score,
-                                    "key_insights": ai_result.key_insights[:2],  # Limit for brevity
-                                    "action_items": ai_result.action_items[:2]
-                                })
-                            else:
-                                results["failed"] += 1
-                        else:
-                            results["failed"] += 1
-                            
-                    except Exception as e:
-                        logger.warning(f"Error processing {msg_file}: {e}")
-                        results["failed"] += 1
-                
-                return results
-                
-            except Exception as e:
-                logger.error(f"Error in AI folder categorization: {e}")
                 return {"error": str(e)}
     
     def _setup_resources(self):
@@ -504,7 +340,7 @@ Use the parse_email_file tool to extract and analyze the email content.
     
     def _email_content_to_dict(self, email_content: EmailContent) -> Dict[str, Any]:
         """Convert EmailContent to dictionary for JSON serialization"""
-        return {
+        result = {
             "message_id": email_content.message_id,
             "subject": email_content.subject,
             "sender": email_content.sender,
@@ -519,8 +355,32 @@ Use the parse_email_file tool to extract and analyze the email content.
             "categories": email_content.categories,
             "correlation_score": email_content.correlation_score,
             "extracted_entities": email_content.extracted_entities,
-            "standardized_format": email_content.standardized_format
+            "standardized_format": email_content.standardized_format,
+            # AI-enhanced fields
+            "sentiment": email_content.sentiment,
+            "ai_summary": email_content.ai_summary,
+            "ai_priority": email_content.ai_priority,
+            "ai_enhanced": email_content.ai_structured_data is not None
         }
+        
+        # Include structured AI data if available
+        if email_content.ai_structured_data:
+            result["ai_structured_data"] = {
+                "summary": email_content.ai_structured_data.summary,
+                "key_points": email_content.ai_structured_data.key_points,
+                "action_items": email_content.ai_structured_data.action_items,
+                "people_mentioned": email_content.ai_structured_data.people_mentioned,
+                "dates_mentioned": email_content.ai_structured_data.dates_mentioned,
+                "monetary_amounts": email_content.ai_structured_data.monetary_amounts,
+                "meeting_details": email_content.ai_structured_data.meeting_details,
+                "contact_information": email_content.ai_structured_data.contact_information,
+                "categories": email_content.ai_structured_data.categories,
+                "priority_level": email_content.ai_structured_data.priority_level,
+                "sentiment": email_content.ai_structured_data.sentiment,
+                "entities": email_content.ai_structured_data.entities
+            }
+        
+        return result
     
     def _analyze_categories(self, emails_data: List[EmailContent]) -> Dict[str, Any]:
         """Analyze email categories"""

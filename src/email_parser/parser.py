@@ -19,6 +19,15 @@ except ImportError:
     print("Warning: extract_msg not installed. Install with: uv pip install extract-msg")
     extract_msg = None
 
+try:
+    from .ai_extractor import AIEmailExtractor, EmailStructuredData
+    AI_AVAILABLE = True
+except ImportError:
+    print("Warning: AI extraction not available. Install with: uv pip install 'email-parsing-mcp[ai]'")
+    AI_AVAILABLE = False
+    AIEmailExtractor = None
+    EmailStructuredData = None
+
 logger = logging.getLogger(__name__)
 
 @dataclass
@@ -39,13 +48,35 @@ class EmailContent:
     correlation_score: float
     extracted_entities: Dict[str, List[str]]
     standardized_format: Dict[str, Any]
+    # New AI-enhanced fields
+    ai_structured_data: Optional[Any] = None  # EmailStructuredData when AI available
+    sentiment: str = "neutral"
+    ai_summary: str = ""
+    ai_priority: str = "medium"
 
 class EmailParser:
     """Main email parsing engine"""
     
-    def __init__(self):
+    def __init__(self, use_ai: bool = True, ai_model: str = "gemini-1.5-flash", use_local: bool = False):
         self.supported_extensions = ['.msg']
-        # Fixed and improved regex patterns
+        self.use_ai = use_ai and AI_AVAILABLE
+        self.use_local = use_local
+        
+        # Initialize AI extractor if available
+        if self.use_ai:
+            try:
+                self.ai_extractor = AIEmailExtractor(model_id=ai_model, use_local=use_local)
+                model_type = "local" if use_local else "cloud"
+                logger.info(f"AI extraction enabled with {model_type} model: {self.ai_extractor.model_id}")
+            except Exception as e:
+                logger.warning(f"Failed to initialize AI extractor: {e}")
+                self.ai_extractor = None
+                self.use_ai = False
+        else:
+            self.ai_extractor = None
+            logger.info("Using traditional regex-based extraction")
+        
+        # Fixed and improved regex patterns (fallback)
         self.entity_patterns = {
             'emails': r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}\b',
             'phones': r'(?:\+?1[-.\s]?)?\(?[0-9]{3}\)?[-.\s]?[0-9]{3}[-.\s]?[0-9]{4}\b',
@@ -91,19 +122,42 @@ class EmailParser:
             # Extract attachments
             attachments = self._extract_attachments(msg)
             
-            # Extract entities from text
-            combined_text = f"{subject} {body_text}"
-            extracted_entities = self._extract_entities(combined_text)
+            # AI-Enhanced Processing
+            ai_structured_data = None
+            ai_summary = ""
+            ai_priority = "medium"
+            sentiment = "neutral"
+            
+            if self.use_ai and self.ai_extractor:
+                try:
+                    ai_structured_data = self.ai_extractor.extract_structured_data(
+                        subject, body_text, sender, recipients
+                    )
+                    ai_summary = ai_structured_data.summary
+                    ai_priority = ai_structured_data.priority_level
+                    sentiment = ai_structured_data.sentiment
+                    # Use AI-extracted entities and categories
+                    extracted_entities = ai_structured_data.entities
+                    categories = ai_structured_data.categories
+                    logger.info("Successfully applied AI extraction")
+                except Exception as e:
+                    logger.warning(f"AI extraction failed, falling back to regex: {e}")
+                    # Fallback to traditional extraction
+                    combined_text = f"{subject} {body_text}"
+                    extracted_entities = self._extract_entities(combined_text)
+                    categories = self._categorize_email(subject, body_text, attachments)
+            else:
+                # Traditional extraction
+                combined_text = f"{subject} {body_text}"
+                extracted_entities = self._extract_entities(combined_text)
+                categories = self._categorize_email(subject, body_text, attachments)
             
             # Calculate correlation score
             correlation_score = self._calculate_correlation(subject, body_text, attachments)
             
-            # Categorize email
-            categories = self._categorize_email(subject, body_text, attachments)
-            
-            # Create standardized format
+            # Create standardized format (enhanced with AI data if available)
             standardized_format = self._create_standardized_format(
-                subject, body_text, attachments, extracted_entities
+                subject, body_text, attachments, extracted_entities, ai_structured_data
             )
             
             email_content = EmailContent(
@@ -121,7 +175,12 @@ class EmailParser:
                 categories=categories,
                 correlation_score=correlation_score,
                 extracted_entities=extracted_entities,
-                standardized_format=standardized_format
+                standardized_format=standardized_format,
+                # AI-enhanced fields
+                ai_structured_data=ai_structured_data,
+                sentiment=sentiment,
+                ai_summary=ai_summary,
+                ai_priority=ai_priority
             )
             
             logger.info(f"Successfully parsed email: {subject[:50]}...")
@@ -234,18 +293,43 @@ class EmailParser:
         return categories or ['general']
     
     def _create_standardized_format(self, subject: str, body: str, 
-                                  attachments: List[Dict], entities: Dict) -> Dict[str, Any]:
+                                  attachments: List[Dict], entities: Dict,
+                                  ai_data: Optional[Any] = None) -> Dict[str, Any]:
         """Create standardized format for the email"""
-        return {
-            'summary': self._generate_summary(subject, body),
-            'key_points': self._extract_key_points(body),
-            'action_items': self._extract_action_items(body),
-            'mentioned_people': entities.get('emails', []),
-            'mentioned_dates': entities.get('dates', []),
-            'mentioned_amounts': entities.get('money', []),
-            'attachment_summary': self._summarize_attachments(attachments),
-            'priority_indicators': self._identify_priority_indicators(subject, body),
-        }
+        if ai_data and hasattr(ai_data, 'summary'):
+            # Use AI-enhanced data when available
+            return {
+                'summary': ai_data.summary,
+                'key_points': ai_data.key_points,
+                'action_items': [item.get('task', str(item)) if isinstance(item, dict) else str(item) for item in ai_data.action_items],
+                'mentioned_people': [person.get('name', str(person)) if isinstance(person, dict) else str(person) for person in ai_data.people_mentioned],
+                'mentioned_dates': [date.get('date', str(date)) if isinstance(date, dict) else str(date) for date in ai_data.dates_mentioned],
+                'mentioned_amounts': [amount.get('amount', str(amount)) if isinstance(amount, dict) else str(amount) for amount in ai_data.monetary_amounts],
+                'attachment_summary': self._summarize_attachments(attachments),
+                'priority_indicators': [ai_data.priority_level],
+                'sentiment': ai_data.sentiment,
+                'categories': ai_data.categories,
+                'meeting_details': ai_data.meeting_details,
+                'contact_information': ai_data.contact_information,
+                'ai_enhanced': True
+            }
+        else:
+            # Fallback to traditional extraction
+            return {
+                'summary': self._generate_summary(subject, body),
+                'key_points': self._extract_key_points(body),
+                'action_items': self._extract_action_items(body),
+                'mentioned_people': entities.get('emails', []),
+                'mentioned_dates': entities.get('dates', []),
+                'mentioned_amounts': entities.get('money', []),
+                'attachment_summary': self._summarize_attachments(attachments),
+                'priority_indicators': self._identify_priority_indicators(subject, body),
+                'sentiment': 'neutral',
+                'categories': [],
+                'meeting_details': None,
+                'contact_information': [],
+                'ai_enhanced': False
+            }
     
     def _generate_summary(self, subject: str, body: str) -> str:
         """Generate a brief summary of the email"""
@@ -335,3 +419,14 @@ class EmailParser:
                 indicators.append(priority)
         
         return indicators
+    
+    def extract_entities_from_text(self, text: str) -> Dict[str, List[str]]:
+        """Extract entities from arbitrary text using AI or regex fallback"""
+        if self.use_ai and self.ai_extractor:
+            try:
+                return self.ai_extractor.extract_entities_from_text(text)
+            except Exception as e:
+                logger.warning(f"AI entity extraction failed, using regex fallback: {e}")
+        
+        # Fallback to regex patterns
+        return self._extract_entities(text)

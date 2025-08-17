@@ -3,9 +3,9 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [project]
-name = "email-parsing-mcp"
+name = "em-ai-lyze"
 version = "1.0.0"
-description = "Modern email parsing application with MCP server for standardizing .msg email content"
+description = "AI-powered email analysis with local and cloud processing - parse, analyze, and extract insights from .msg files"
 authors = [
     {name = "Your Name", email = "your.email@example.com"},
 ]
@@ -20,7 +20,7 @@ classifiers = [
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
 ]
-keywords = ["email", "parsing", "mcp", "msg", "standardization"]
+keywords = ["email", "ai", "analysis", "ollama", "mcp", "msg", "langextract", "parsing"]
 
 dependencies = [
     "extract-msg>=0.41.0",
@@ -51,16 +51,17 @@ network = [
 ai = [
     "ollama>=0.2.1",
     "requests>=2.31.0",
+    "langextract>=0.1.0",
 ]
 
 [project.urls]
-Homepage = "https://github.com/yourusername/email-parsing-mcp"
-Documentation = "https://github.com/yourusername/email-parsing-mcp#readme"
-Repository = "https://github.com/yourusername/email-parsing-mcp"
-Issues = "https://github.com/yourusername/email-parsing-mcp/issues"
+Homepage = "https://github.com/devraj21/em-ai-lyze"
+Documentation = "https://github.com/devraj21/em-ai-lyze#readme"
+Repository = "https://github.com/devraj21/em-ai-lyze"
+Issues = "https://github.com/devraj21/em-ai-lyze/issues"
 
 [project.scripts]
-email-parser = "email_parser.main:main"
+em-ai-lyze = "email_parser.main:main"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/email_parser"]

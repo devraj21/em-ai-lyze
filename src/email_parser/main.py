@@ -22,12 +22,31 @@ logging.basicConfig(
 
 logger = logging.getLogger(__name__)
 
-def run_mcp_server():
+def run_mcp_server(use_local=False, ai_model="gemini-1.5-flash"):
     """Run the MCP server"""
     try:
-        from .mcp_server import start_server
-        logger.info("Starting Email Parser MCP Server...")
-        start_server()
+        from .mcp_server import EmailParserMCPServer
+        model_type = "local" if use_local else "cloud"
+        logger.info(f"Starting Email Parser MCP Server with {model_type} AI...")
+        
+        # Create and run server
+        server = EmailParserMCPServer(
+            name="email-parser",
+            use_ai=True,
+            ai_model=ai_model,
+            use_local=use_local
+        )
+        
+        # Run the server
+        try:
+            import uvloop
+            asyncio.set_event_loop_policy(uvloop.EventLoopPolicy())
+        except ImportError:
+            # uvloop is optional, fall back to default event loop
+            pass
+        
+        server.mcp.run()
+        
     except ImportError as e:
         logger.error(f"MCP server dependencies not available: {e}")
         logger.info("Install with: uv pip install fastmcp")
@@ -75,11 +94,21 @@ def main():
         default="stdio",
         help="MCP transport protocol (stdio, websocket, http)"
     )
+    parser.add_argument(
+        "--local",
+        action="store_true",
+        help="Use local Ollama models instead of cloud AI"
+    )
+    parser.add_argument(
+        "--model",
+        default="gemini-1.5-flash",
+        help="AI model to use (default: gemini-1.5-flash)"
+    )
     
     args = parser.parse_args()
     
     if args.mcp:
-        run_mcp_server()
+        run_mcp_server(use_local=args.local, ai_model=args.model)
     else:
         asyncio.run(demo_parser())
 

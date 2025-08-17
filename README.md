@@ -1,6 +1,8 @@
-# Email Parsing MCP Server with AI Integration
+# Em-AI-lyze 🤖📧
 
-A modern Python application for parsing .msg email files and standardizing their content using an MCP (Model Context Protocol) server, enhanced with local AI analysis powered by Ollama Phi3.
+**AI-powered email analysis with privacy-first local processing**
+
+A modern Python application for parsing .msg email files and extracting structured insights using AI. Features both cloud (Gemini) and local (Ollama) processing with MCP (Model Context Protocol) integration for Claude Desktop.
 
 ## 🏗️ System Architecture
 
@@ -262,7 +264,8 @@ flowchart TD
 ### **Prerequisites**
 - Python 3.12+
 - uv package manager
-- Ollama with Phi3 model (for AI features)
+- Ollama with local models (for AI features)
+- LangExtract for AI-powered entity extraction
 
 ### **Setup**
 1. **Clone and setup:**
@@ -271,25 +274,27 @@ flowchart TD
 source .venv/bin/activate
 ```
 
-2. **Install Ollama and Phi3 (for AI features):**
+2. **Install Ollama and models (for AI features):**
 ```bash
 # Install Ollama
-curl -fsSL https://ollama.com/install.sh | sh
+curl -fsSL https://ollama.ai/install.sh | sh
 
-# Pull Phi3 model
-ollama pull phi3
-
-# Start Ollama service
-ollama serve
+# Pull recommended models
+ollama pull llama3.2:1b     # Fast & lightweight
+ollama pull phi3:mini       # Balanced performance
+ollama pull mistral:latest  # Best accuracy
 ```
 
 3. **Test the system:**
 ```bash
-# Basic email parsing
-python email_cli.py parse-file "./examples/sample_emails/(KH) Leaver - BUPA - Malik Bem.msg" --format summary
+# Basic functionality test
+python cli.py test
 
-# AI-powered analysis
-python email_cli.py ai-analyze file "./examples/sample_emails/(KH) Leaver - BUPA - Malik Bem.msg" --format json --auto-save
+# Parse email with local AI
+python cli.py parse --file "./examples/sample_emails/sample.msg" --local
+
+# Extract entities from text
+python cli.py extract --text "Meeting tomorrow at 2 PM" --local
 ```
 
 ## 📖 Usage Guide
@@ -299,40 +304,43 @@ python email_cli.py ai-analyze file "./examples/sample_emails/(KH) Leaver - BUPA
 #### **Traditional Email Processing**
 ```bash
 # Parse single email file
-python email_cli.py parse-file email.msg --format json --auto-save
+python cli.py parse --file email.msg --output json
 
 # Batch process folder
-python email_cli.py parse-folder ./emails --format detailed --auto-save
-
-# Analyze email patterns
-python email_cli.py analyze-patterns ./emails --type categories --format summary
+python cli.py parse-folder --folder ./emails --output detailed
 
 # Extract entities from text
-python email_cli.py extract-entities --text "Contact john@example.com at 555-123-4567"
+python cli.py extract --text "Contact john@example.com at 555-123-4567"
+
+# Compare processing methods
+python cli.py compare --file email.msg
 ```
 
 #### **🤖 AI-Powered Analysis**
 ```bash
-# AI analyze single email
-python email_cli.py ai-analyze file email.msg --format json --auto-save
+# AI analyze single email with local models
+python cli.py parse --file email.msg --local --model "phi3:mini"
 
-# AI analyze arbitrary text
-python email_cli.py ai-analyze text --text "Urgent: Budget approval needed by Friday"
+# AI analyze arbitrary text with Ollama
+python cli.py extract --text "Urgent: Budget approval needed by Friday" --local
 
-# Smart batch categorization
-python email_cli.py ai-analyze categorize ./emails --format detailed --auto-save
+# Smart batch categorization with different models
+python cli.py parse-folder --folder ./emails --local --model "mistral:latest" --output detailed
 ```
 
 #### **🌐 Server Modes**
 ```bash
-# MCP server for Claude Desktop
-python email_cli.py server --mcp
+# MCP server for Claude Desktop (local AI)
+python -m src.email_parser.main --mcp --local
+
+# MCP server with cloud AI
+python -m src.email_parser.main --mcp
 
 # HTTP REST API server
-python email_cli.py server --http --port 8000
+python -m src.email_parser.transports --transport http --port 8000
 
 # WebSocket server for real-time apps
-python email_cli.py server --websocket --port 8001
+python -m src.email_parser.transports --transport websocket --port 8001
 ```
 
 ### **🔌 MCP Integration with Claude Desktop**
@@ -341,23 +349,20 @@ Add to your Claude Desktop configuration:
 ```json
 {
   "mcpServers": {
-    "email-parser": {
+    "em-ai-lyze": {
       "command": "python",
-      "args": ["email_cli.py", "server", "--mcp"],
-      "cwd": "/path/to/email-parser"
+      "args": ["-m", "src.email_parser.main", "--mcp", "--local"],
+      "cwd": "/path/to/em-ai-lyze"
     }
   }
 }
 ```
 
 **Available MCP Tools:**
-- `parse_email_file` - Parse single .msg file
-- `parse_email_folder` - Batch process folders
-- `analyze_email_patterns` - Pattern analysis
-- `extract_entities_from_text` - Entity extraction
-- `ai_analyze_email_file` - AI-powered email analysis
-- `ai_analyze_text` - AI text analysis
-- `ai_smart_categorize_folder` - Smart batch AI processing
+- `parse_email_file` - Parse single .msg file with AI analysis
+- `parse_email_folder` - Batch process folders with AI insights
+- `analyze_email_patterns` - Pattern analysis across emails
+- `extract_entities_from_text` - AI-powered entity extraction
 
 ### **🌐 HTTP API Endpoints**
 
@@ -440,7 +445,7 @@ make clean    # Clean generated files
 ### **Dependencies**
 - **Core**: `extract-msg`, `fastmcp`, `python-dateutil`
 - **Network**: `fastapi`, `uvicorn`, `websockets` (optional)
-- **AI**: `ollama`, `requests` (optional)
+- **AI**: `langextract`, `ollama`, `requests` (optional)
 - **Dev**: `pytest`, `black`, `mypy`, `flake8` (optional)
 
 ## 🎯 Use Cases
@@ -490,14 +495,17 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - **[extract-msg](https://github.com/TeamMsgExtractor/msg-extractor)** - Core .msg file parsing
 - **[Ollama](https://ollama.com/)** - Local AI model hosting
 - **[FastMCP](https://github.com/jlowin/fastmcp)** - Model Context Protocol implementation
-- **[Phi3](https://huggingface.co/microsoft/Phi-3-mini-4k-instruct)** - Microsoft's efficient language model
+- **[LangExtract](https://github.com/google/langextract)** - AI-powered structured information extraction
+- **[Llama 3.2](https://ollama.com/library/llama3.2)** - Meta's efficient language models
+- **[Phi-3](https://ollama.com/library/phi3)** - Microsoft's balanced language model
+- **[Mistral](https://ollama.com/library/mistral)** - High-accuracy language model
 
 ## 📞 Support
 
 For questions, issues, or feature requests:
 
-- **GitHub Issues**: [Report bugs or request features](https://github.com/yourusername/email-parser/issues)
-- **Documentation**: Check the comprehensive guides in the `/docs` folder
+- **GitHub Issues**: [Report bugs or request features](https://github.com/devraj21/em-ai-lyze/issues)
+- **Documentation**: Check the comprehensive guides in the [docs/](docs/) folder
 - **Community**: Join discussions in GitHub Discussions
 
 ---
