@@ -105,13 +105,36 @@ class AIEmailExtractor:
             
             return None
     
-    def extract_structured_data(self, subject: str, body: str, sender: str = "", recipients: List[str] = None) -> EmailStructuredData:
-        """Extract structured data from email content using AI"""
+    def extract_structured_data(self, subject: str, body: str, sender: str = "", recipients: Optional[List[str]] = None, attachments: Optional[List[Dict]] = None, rag_context=None) -> EmailStructuredData:
+        """Extract structured data from email content using AI with comprehensive integration"""
         if not self.available:
-            return self._fallback_extraction(subject, body, sender, recipients or [])
+            return self._fallback_extraction(subject, body, sender, recipients or [], attachments or [])
         
         try:
-            # Combine email content for analysis
+            # Prepare attachment information for analysis
+            attachment_summary = ""
+            if attachments:
+                att_details = []
+                for att in attachments:
+                    filename = att.get('filename', 'unnamed')
+                    file_category = att.get('file_category', 'unknown')
+                    content_preview = att.get('content_preview', '')
+                    content_summary = att.get('content_summary', '')
+                    
+                    att_detail = f"- {filename} ({file_category})"
+                    if content_summary:
+                        att_detail += f": {content_summary}"
+                    elif content_preview:
+                        att_detail += f": {content_preview[:100]}..."
+                    att_details.append(att_detail)
+                
+                attachment_summary = f"""
+                
+                Attachments ({len(attachments)} files):
+                {chr(10).join(att_details)}
+                """
+            
+            # Combine all email components for comprehensive analysis
             full_content = f"""
             Subject: {subject}
             From: {sender}
@@ -119,43 +142,82 @@ class AIEmailExtractor:
             
             Body:
             {body}
+            {attachment_summary}
             """
             
-            # Define extraction prompt
-            extraction_prompt = """
-            Extract structured information from this email content. Focus on:
+            # Enhanced extraction prompt with RAG context integration
+            rag_context_info = ""
+            if rag_context and hasattr(rag_context, 'similar_emails') and rag_context.similar_emails:
+                similar_subjects = [email.subject for email in rag_context.similar_emails[:3]]
+                rag_context_info = f"""
+                
+                HISTORICAL CONTEXT (from similar emails):
+                - {len(rag_context.similar_emails)} similar emails found
+                - Similar subjects: {'; '.join(similar_subjects)}
+                - Context: {rag_context.context_summary}
+                - Suggested categories: {', '.join(rag_context.suggested_categories[:5])}
+                - Confidence: {rag_context.confidence_score:.2f}
+                
+                Use this historical context to inform your analysis, especially for:
+                - More accurate categorization based on similar emails
+                - Better priority assessment using historical patterns
+                - Enhanced entity recognition using domain knowledge
+                - Improved sentiment analysis based on organizational context
+                """
             
-            1. Summary: A concise 1-2 sentence summary of the email's main purpose
-            2. Key Points: Important information, decisions, or topics discussed
-            3. Action Items: Specific tasks, requests, or actions that need to be taken
-            4. People Mentioned: Names and roles of people referenced (excluding sender/recipients)
-            5. Dates: Any dates, deadlines, or time references mentioned
-            6. Monetary Amounts: Financial figures, costs, budgets mentioned
-            7. Meeting Details: If this is about a meeting (time, location, agenda items)
-            8. Contact Information: Phone numbers, addresses, or other contact details
-            9. Categories: What type of email this is (meeting, invoice, report, etc.)
-            10. Priority Level: high, medium, or low based on language and urgency indicators
-            11. Sentiment: positive, neutral, or negative tone of the email
-            12. Named Entities: Organizations, locations, products, services mentioned
+            extraction_prompt = f"""
+            Extract structured information from this complete email (subject + body + attachments). 
+            Consider ALL components together for context and correlation. Focus on:
             
-            Return structured data with clear categorization.
+            1. Summary: A comprehensive 2-3 sentence summary covering the main purpose and key components
+            2. Key Points: Important information from subject, body, and attachment content
+            3. Action Items: Tasks, requests, or actions from any component (mark source if from attachment)
+            4. People Mentioned: Names and roles from all sources (email content and attachments)
+            5. Dates: Deadlines, meetings, or time references from all components
+            6. Monetary Amounts: Financial figures from email or attachment content
+            7. Meeting Details: Meeting information from any source (email or attachments)
+            8. Contact Information: Phone numbers, addresses from all sources
+            9. Categories: Email type based on complete content analysis (consider attachment types and historical context)
+            10. Priority Level: Urgency based on subject, body language, attachment importance, and similar email patterns
+            11. Sentiment: Overall tone considering all components and organizational context
+            12. Named Entities: Organizations, locations, products from all sources
+            13. Content Correlation: How well the subject, body, and attachments align in topic and purpose
+            
+            Pay special attention to:
+            - Cross-references between email content and attachments
+            - Consistency of information across all components
+            - Additional context provided by attachments
+            - Integration of attachment content with email message
+            - Historical patterns and context from similar emails
+            {rag_context_info}
+            
+            Return comprehensive structured data reflecting the complete email analysis enhanced with historical context.
             """
             
-            # Create example for LangExtract
+            # Create comprehensive example
             example_text = """
-                    Subject: Urgent: Budget Review Meeting Tomorrow
+                    Subject: Q4 Budget Review - Action Required
                     From: manager@company.com
                     To: team@company.com
                     
                     Body:
                     Hi team,
                     
-                    We need to meet tomorrow at 2 PM in Conference Room A to review the Q4 budget.
-                    Please bring your department's spending reports. The deadline for budget submission is December 15th, 2024.
-                    Contact Sarah at 555-123-4567 if you have questions.
+                    Please review the attached budget spreadsheet before tomorrow's meeting at 2 PM in Conference Room A.
+                    The spreadsheet shows our Q4 spending against targets. Sarah has identified several areas needing attention.
+                    Contact her at 555-123-4567 with any questions before the meeting.
+                    
+                    Meeting agenda:
+                    1. Review Q4 actuals vs budget
+                    2. Discuss cost overruns in marketing department
+                    3. Plan Q1 budget adjustments
                     
                     Thanks,
                     Mike
+                    
+                    Attachments (2 files):
+                    - Q4_Budget_Analysis.xlsx (spreadsheet): Detailed budget breakdown showing $50K marketing overspend
+                    - Meeting_Agenda_Draft.docx (document): Formal agenda with time allocations and discussion points
                     """
             
             examples = [
@@ -164,39 +226,44 @@ class AIEmailExtractor:
                     extractions=[
                         lx.data.Extraction(
                             extraction_class="summary",
-                            extraction_text="Team meeting scheduled for tomorrow at 2 PM to review Q4 budget with spending reports required.",
+                            extraction_text="Budget review meeting scheduled for tomorrow to discuss Q4 spending analysis, with focus on marketing department cost overruns identified in attached spreadsheet.",
                             attributes={}
                         ),
                         lx.data.Extraction(
                             extraction_class="categories",
-                            extraction_text="meeting",
-                            attributes={"type": "business"}
+                            extraction_text="meeting, financial_review, budget",
+                            attributes={"has_attachments": True, "attachment_types": ["spreadsheet", "document"]}
                         ),
                         lx.data.Extraction(
                             extraction_class="priority_level",
                             extraction_text="high",
-                            attributes={"reason": "urgent keyword"}
+                            attributes={"reason": "action required, budget issues, upcoming deadline"}
                         ),
                         lx.data.Extraction(
-                            extraction_class="people_mentioned",
-                            extraction_text="Sarah",
-                            attributes={"role": "contact person"}
+                            extraction_class="key_points",
+                            extraction_text="Q4 spending exceeded targets, Marketing department cost overruns identified, Budget spreadsheet requires review before meeting",
+                            attributes={}
                         ),
                         lx.data.Extraction(
-                            extraction_class="dates_mentioned",
-                            extraction_text="December 15th, 2024",
-                            attributes={"context": "budget submission deadline"}
+                            extraction_class="action_items",
+                            extraction_text="Review budget spreadsheet before meeting, Attend meeting tomorrow at 2 PM",
+                            attributes={}
                         ),
                         lx.data.Extraction(
-                            extraction_class="meeting_details",
-                            extraction_text="2 PM tomorrow in Conference Room A",
-                            attributes={"purpose": "budget review"}
+                            extraction_class="monetary_amounts",
+                            extraction_text="$50K marketing overspend",
+                            attributes={"source": "attachment", "context": "budget_overrun"}
+                        ),
+                        lx.data.Extraction(
+                            extraction_class="content_correlation",
+                            extraction_text="High correlation - email explains meeting purpose, attachments provide supporting data and formal agenda",
+                            attributes={"score": "0.9"}
                         )
                     ]
                 )
             ]
             
-            # Use LangExtract for structured extraction
+            # Use LangExtract for comprehensive extraction
             result = lx.extract(
                 text_or_documents=full_content,
                 prompt_description=extraction_prompt,
@@ -208,17 +275,14 @@ class AIEmailExtractor:
             return self._process_langextract_results(result, subject, body)
             
         except Exception as e:
-            logger.error(f"Error in AI extraction: {e}")
-            return self._fallback_extraction(subject, body, sender, recipients or [])
+            logger.error(f"Error in comprehensive AI extraction: {e}")
+            return self._fallback_extraction(subject, body, sender, recipients or [], attachments or [])
     
     def _process_langextract_results(self, result, subject: str, body: str) -> EmailStructuredData:
-        """Process LangExtract results into structured format"""
+        """Process LangExtract results into structured format with robust error handling"""
         try:
-            # Extract structured data from LangExtract result
-            extracted = result.extractions if hasattr(result, 'extractions') else []
-            
-            # Initialize default values
-            summary = subject  # Fallback to subject if no AI summary
+            # Initialize default values with validation
+            summary = self._validate_text(subject, max_length=200) or "No summary available"
             key_points = []
             action_items = []
             people_mentioned = []
@@ -231,36 +295,62 @@ class AIEmailExtractor:
             sentiment = "neutral"
             entities = {}
             
-            # Process extractions
-            for extraction in extracted:
-                if hasattr(extraction, 'data') and extraction.data:
-                    data = extraction.data
-                    
-                    # Map extracted data to our structure
-                    if 'summary' in data:
-                        summary = data['summary']
-                    if 'key_points' in data:
-                        key_points = data['key_points'] if isinstance(data['key_points'], list) else [data['key_points']]
-                    if 'action_items' in data:
-                        action_items = self._format_action_items(data['action_items'])
-                    if 'people_mentioned' in data:
-                        people_mentioned = self._format_people(data['people_mentioned'])
-                    if 'dates' in data:
-                        dates_mentioned = self._format_dates(data['dates'])
-                    if 'monetary_amounts' in data:
-                        monetary_amounts = self._format_money(data['monetary_amounts'])
-                    if 'meeting_details' in data:
-                        meeting_details = data['meeting_details']
-                    if 'contact_information' in data:
-                        contact_information = self._format_contacts(data['contact_information'])
-                    if 'categories' in data:
-                        categories = data['categories'] if isinstance(data['categories'], list) else [data['categories']]
-                    if 'priority_level' in data:
-                        priority_level = data['priority_level'].lower() if data['priority_level'] else "medium"
-                    if 'sentiment' in data:
-                        sentiment = data['sentiment'].lower() if data['sentiment'] else "neutral"
-                    if 'entities' in data:
-                        entities = data['entities'] if isinstance(data['entities'], dict) else {}
+            # Safely extract data from LangExtract result
+            extracted_data = self._safely_extract_data(result)
+            
+            if extracted_data:
+                # Process each field with validation and fallback
+                summary = self._validate_text(
+                    extracted_data.get('summary', summary),
+                    max_length=500,
+                    fallback=summary
+                )
+                
+                key_points = self._validate_list(
+                    extracted_data.get('key_points', []),
+                    max_items=10,
+                    item_validator=lambda x: self._validate_text(x, max_length=200)
+                )
+                
+                action_items = self._format_and_validate_action_items(
+                    extracted_data.get('action_items', [])
+                )
+                
+                people_mentioned = self._format_and_validate_people(
+                    extracted_data.get('people_mentioned', [])
+                )
+                
+                dates_mentioned = self._format_and_validate_dates(
+                    extracted_data.get('dates_mentioned', []) or extracted_data.get('dates', [])
+                )
+                
+                monetary_amounts = self._format_and_validate_money(
+                    extracted_data.get('monetary_amounts', []) or extracted_data.get('money', [])
+                )
+                
+                meeting_details = self._validate_meeting_details(
+                    extracted_data.get('meeting_details')
+                )
+                
+                contact_information = self._format_and_validate_contacts(
+                    extracted_data.get('contact_information', [])
+                )
+                
+                categories = self._validate_categories(
+                    extracted_data.get('categories', ["general"])
+                )
+                
+                priority_level = self._validate_priority(
+                    extracted_data.get('priority_level', "medium")
+                )
+                
+                sentiment = self._validate_sentiment(
+                    extracted_data.get('sentiment', "neutral")
+                )
+                
+                entities = self._validate_entities(
+                    extracted_data.get('entities', {})
+                )
             
             return EmailStructuredData(
                 summary=summary,
@@ -279,7 +369,350 @@ class AIEmailExtractor:
             
         except Exception as e:
             logger.error(f"Error processing LangExtract results: {e}")
-            return self._fallback_extraction(subject, body, "", [])
+            return self._fallback_extraction(subject, body, "", [], [])
+    
+    def _safely_extract_data(self, result) -> Dict:
+        """Safely extract data from LangExtract result with multiple fallback strategies"""
+        extracted_data = {}
+        
+        try:
+            # Strategy 1: Direct extraction from result.extractions
+            if hasattr(result, 'extractions') and result.extractions:
+                for extraction in result.extractions:
+                    if hasattr(extraction, 'data') and extraction.data:
+                        if isinstance(extraction.data, dict):
+                            extracted_data.update(extraction.data)
+                        else:
+                            # Try to parse text-based data
+                            self._parse_text_extraction(extraction, extracted_data)
+                    elif hasattr(extraction, 'extraction_text'):
+                        # Parse individual extraction text
+                        self._parse_extraction_text(extraction, extracted_data)
+            
+            # Strategy 2: Direct data access from result
+            if hasattr(result, 'data') and isinstance(result.data, dict):
+                extracted_data.update(result.data)
+            
+            # Strategy 3: Parse result as structured text
+            if not extracted_data and hasattr(result, '__dict__'):
+                for key, value in result.__dict__.items():
+                    if key not in ['extractions', 'metadata'] and value:
+                        extracted_data[key] = value
+            
+        except Exception as e:
+            logger.warning(f"Error in safe data extraction: {e}")
+        
+        return extracted_data
+    
+    def _parse_text_extraction(self, extraction, data_dict: Dict):
+        """Parse text-based extraction into structured data"""
+        try:
+            if hasattr(extraction, 'extraction_class') and hasattr(extraction, 'extraction_text'):
+                class_name = str(extraction.extraction_class).lower()
+                text_value = str(extraction.extraction_text)
+                
+                if class_name in ['summary']:
+                    data_dict['summary'] = text_value
+                elif class_name in ['categories', 'category']:
+                    data_dict['categories'] = [text_value] if isinstance(text_value, str) else text_value
+                elif class_name in ['priority', 'priority_level']:
+                    data_dict['priority_level'] = text_value
+                elif class_name in ['sentiment']:
+                    data_dict['sentiment'] = text_value
+                elif class_name in ['people', 'people_mentioned']:
+                    if 'people_mentioned' not in data_dict:
+                        data_dict['people_mentioned'] = []
+                    data_dict['people_mentioned'].append(text_value)
+                elif class_name in ['dates', 'dates_mentioned']:
+                    if 'dates_mentioned' not in data_dict:
+                        data_dict['dates_mentioned'] = []
+                    data_dict['dates_mentioned'].append(text_value)
+                
+        except Exception as e:
+            logger.warning(f"Error parsing text extraction: {e}")
+    
+    def _parse_extraction_text(self, extraction, data_dict: Dict):
+        """Parse extraction text for structured information"""
+        try:
+            text = str(extraction.extraction_text) if hasattr(extraction, 'extraction_text') else ""
+            if not text:
+                return
+            
+            # Simple pattern matching for common structures
+            text_lower = text.lower()
+            
+            # Look for sentiment indicators
+            if any(word in text_lower for word in ['positive', 'negative', 'neutral', 'happy', 'angry', 'sad']):
+                if 'positive' in text_lower or 'happy' in text_lower:
+                    data_dict['sentiment'] = 'positive'
+                elif 'negative' in text_lower or 'angry' in text_lower or 'sad' in text_lower:
+                    data_dict['sentiment'] = 'negative'
+                else:
+                    data_dict['sentiment'] = 'neutral'
+            
+            # Look for priority indicators
+            if any(word in text_lower for word in ['high', 'urgent', 'low', 'medium', 'critical']):
+                if 'high' in text_lower or 'urgent' in text_lower or 'critical' in text_lower:
+                    data_dict['priority_level'] = 'high'
+                elif 'low' in text_lower:
+                    data_dict['priority_level'] = 'low'
+                else:
+                    data_dict['priority_level'] = 'medium'
+                    
+        except Exception as e:
+            logger.warning(f"Error parsing extraction text: {e}")
+    
+    def _validate_text(self, text, max_length: int = 1000, fallback: str = "") -> str:
+        """Validate and clean text data"""
+        if not text or not isinstance(text, str):
+            return fallback
+        
+        cleaned = text.strip()
+        if len(cleaned) > max_length:
+            cleaned = cleaned[:max_length-3] + "..."
+        
+        return cleaned if cleaned else fallback
+    
+    def _validate_list(self, items, max_items: int = 20, item_validator=None) -> List:
+        """Validate and clean list data"""
+        if not items or not isinstance(items, (list, tuple)):
+            return []
+        
+        validated = []
+        for item in items[:max_items]:  # Limit list size
+            if item_validator:
+                validated_item = item_validator(item)
+                if validated_item:
+                    validated.append(validated_item)
+            else:
+                validated.append(item)
+        
+        return validated
+    
+    def _format_and_validate_action_items(self, items) -> List[Dict[str, Any]]:
+        """Format and validate action items with enhanced error handling"""
+        if not items:
+            return []
+        
+        formatted = []
+        items_list = items if isinstance(items, list) else [items]
+        
+        for item in items_list[:10]:  # Limit to 10 items
+            try:
+                if isinstance(item, str):
+                    task_text = self._validate_text(item, max_length=200)
+                    if task_text:
+                        formatted.append({
+                            "task": task_text, 
+                            "priority": "medium", 
+                            "assigned_to": None
+                        })
+                elif isinstance(item, dict):
+                    validated_item = {
+                        "task": self._validate_text(item.get('task', ''), max_length=200),
+                        "priority": self._validate_priority(item.get('priority', 'medium')),
+                        "assigned_to": self._validate_text(item.get('assigned_to', ''), max_length=100) or None
+                    }
+                    if validated_item["task"]:
+                        formatted.append(validated_item)
+            except Exception as e:
+                logger.warning(f"Error validating action item: {e}")
+                continue
+        
+        return formatted
+    
+    def _format_and_validate_people(self, people) -> List[Dict[str, str]]:
+        """Format and validate people mentions with enhanced error handling"""
+        if not people:
+            return []
+        
+        formatted = []
+        people_list = people if isinstance(people, list) else [people]
+        
+        for person in people_list[:20]:  # Limit to 20 people
+            try:
+                if isinstance(person, str):
+                    name = self._validate_text(person, max_length=100)
+                    if name:
+                        formatted.append({"name": name, "role": "unknown"})
+                elif isinstance(person, dict):
+                    name = self._validate_text(person.get('name', ''), max_length=100)
+                    role = self._validate_text(person.get('role', 'unknown'), max_length=100)
+                    if name:
+                        formatted.append({"name": name, "role": role})
+            except Exception as e:
+                logger.warning(f"Error validating person: {e}")
+                continue
+        
+        return formatted
+    
+    def _format_and_validate_dates(self, dates) -> List[Dict[str, str]]:
+        """Format and validate date mentions with enhanced error handling"""
+        if not dates:
+            return []
+        
+        formatted = []
+        dates_list = dates if isinstance(dates, list) else [dates]
+        
+        for date in dates_list[:10]:  # Limit to 10 dates
+            try:
+                if isinstance(date, str):
+                    date_text = self._validate_text(date, max_length=100)
+                    if date_text:
+                        formatted.append({"date": date_text, "context": "mentioned"})
+                elif isinstance(date, dict):
+                    date_text = self._validate_text(date.get('date', ''), max_length=100)
+                    context = self._validate_text(date.get('context', 'mentioned'), max_length=100)
+                    if date_text:
+                        formatted.append({"date": date_text, "context": context})
+            except Exception as e:
+                logger.warning(f"Error validating date: {e}")
+                continue
+        
+        return formatted
+    
+    def _format_and_validate_money(self, amounts) -> List[Dict[str, str]]:
+        """Format and validate monetary amounts with enhanced error handling"""
+        if not amounts:
+            return []
+        
+        formatted = []
+        amounts_list = amounts if isinstance(amounts, list) else [amounts]
+        
+        for amount in amounts_list[:10]:  # Limit to 10 amounts
+            try:
+                if isinstance(amount, str):
+                    amount_text = self._validate_text(amount, max_length=50)
+                    if amount_text:
+                        formatted.append({"amount": amount_text, "context": "mentioned"})
+                elif isinstance(amount, dict):
+                    amount_text = self._validate_text(amount.get('amount', ''), max_length=50)
+                    context = self._validate_text(amount.get('context', 'mentioned'), max_length=100)
+                    if amount_text:
+                        formatted.append({"amount": amount_text, "context": context})
+            except Exception as e:
+                logger.warning(f"Error validating amount: {e}")
+                continue
+        
+        return formatted
+    
+    def _format_and_validate_contacts(self, contacts) -> List[Dict[str, str]]:
+        """Format and validate contact information with enhanced error handling"""
+        if not contacts:
+            return []
+        
+        formatted = []
+        contacts_list = contacts if isinstance(contacts, list) else [contacts]
+        
+        for contact in contacts_list[:10]:  # Limit to 10 contacts
+            try:
+                if isinstance(contact, str):
+                    contact_text = self._validate_text(contact, max_length=100)
+                    if contact_text:
+                        contact_type = "email" if "@" in contact_text else "phone" if any(c.isdigit() for c in contact_text) else "other"
+                        formatted.append({"value": contact_text, "type": contact_type})
+                elif isinstance(contact, dict):
+                    value = self._validate_text(contact.get('value', ''), max_length=100)
+                    contact_type = self._validate_text(contact.get('type', 'other'), max_length=20)
+                    if value:
+                        formatted.append({"value": value, "type": contact_type})
+            except Exception as e:
+                logger.warning(f"Error validating contact: {e}")
+                continue
+        
+        return formatted
+    
+    def _validate_meeting_details(self, meeting_details) -> Optional[Dict[str, Any]]:
+        """Validate meeting details structure"""
+        if not meeting_details or not isinstance(meeting_details, dict):
+            return None
+        
+        try:
+            validated = {}
+            if 'time' in meeting_details:
+                validated['time'] = self._validate_text(meeting_details['time'], max_length=100)
+            if 'location' in meeting_details:
+                validated['location'] = self._validate_text(meeting_details['location'], max_length=200)
+            if 'agenda' in meeting_details:
+                validated['agenda'] = self._validate_text(meeting_details['agenda'], max_length=500)
+            if 'attendees' in meeting_details:
+                attendees = meeting_details['attendees']
+                if isinstance(attendees, list):
+                    validated['attendees'] = [self._validate_text(str(a), max_length=100) for a in attendees[:20]]
+            
+            return validated if validated else None
+            
+        except Exception as e:
+            logger.warning(f"Error validating meeting details: {e}")
+            return None
+    
+    def _validate_categories(self, categories) -> List[str]:
+        """Validate email categories"""
+        if not categories:
+            return ["general"]
+        
+        valid_categories = []
+        categories_list = categories if isinstance(categories, list) else [categories]
+        
+        for category in categories_list[:10]:  # Limit to 10 categories
+            if isinstance(category, str):
+                clean_category = category.lower().strip()
+                if clean_category and len(clean_category) <= 50:
+                    valid_categories.append(clean_category)
+        
+        return valid_categories if valid_categories else ["general"]
+    
+    def _validate_priority(self, priority) -> str:
+        """Validate priority level"""
+        if not priority or not isinstance(priority, str):
+            return "medium"
+        
+        priority_lower = priority.lower().strip()
+        valid_priorities = ["low", "medium", "high", "urgent", "critical"]
+        
+        # Map common variations
+        priority_mapping = {
+            "low": "low",
+            "medium": "medium", "med": "medium", "normal": "medium",
+            "high": "high",
+            "urgent": "high", "critical": "high", "important": "high"
+        }
+        
+        return priority_mapping.get(priority_lower, "medium")
+    
+    def _validate_sentiment(self, sentiment) -> str:
+        """Validate sentiment value"""
+        if not sentiment or not isinstance(sentiment, str):
+            return "neutral"
+        
+        sentiment_lower = sentiment.lower().strip()
+        valid_sentiments = ["positive", "negative", "neutral"]
+        
+        # Map common variations
+        sentiment_mapping = {
+            "positive": "positive", "pos": "positive", "good": "positive", "happy": "positive",
+            "negative": "negative", "neg": "negative", "bad": "negative", "angry": "negative", "sad": "negative",
+            "neutral": "neutral", "normal": "neutral", "okay": "neutral", "ok": "neutral"
+        }
+        
+        return sentiment_mapping.get(sentiment_lower, "neutral")
+    
+    def _validate_entities(self, entities) -> Dict[str, List[str]]:
+        """Validate entities dictionary"""
+        if not entities or not isinstance(entities, dict):
+            return {}
+        
+        validated = {}
+        for key, values in entities.items():
+            if isinstance(key, str) and key.strip():
+                clean_key = key.strip().lower()
+                if isinstance(values, list):
+                    clean_values = [self._validate_text(str(v), max_length=100) for v in values[:20] if v]
+                    validated[clean_key] = [v for v in clean_values if v]
+                elif isinstance(values, str) and values.strip():
+                    validated[clean_key] = [self._validate_text(values, max_length=100)]
+        
+        return validated
     
     def _format_action_items(self, items) -> List[Dict[str, Any]]:
         """Format action items with structure"""
@@ -368,7 +801,7 @@ class AIEmailExtractor:
         
         return formatted
     
-    def _fallback_extraction(self, subject: str, body: str, sender: str, recipients: List[str]) -> EmailStructuredData:
+    def _fallback_extraction(self, subject: str, body: str, sender: str, recipients: List[str], attachments: Optional[List[Dict]] = None) -> EmailStructuredData:
         """Fallback extraction using basic patterns when AI is not available"""
         import re
         
@@ -380,6 +813,13 @@ class AIEmailExtractor:
         
         content = f"{subject} {body}"
         
+        # Include attachment content if available
+        if attachments:
+            for att in attachments:
+                extracted_text = att.get('extracted_text', '')
+                if extracted_text:
+                    content += f" {extracted_text}"
+        
         # Extract entities using regex
         entities = {
             'emails': re.findall(email_pattern, content),
@@ -388,15 +828,36 @@ class AIEmailExtractor:
             'money': re.findall(money_pattern, content, re.IGNORECASE)
         }
         
-        # Basic categorization
+        # Enhanced categorization with attachment consideration
         content_lower = content.lower()
         categories = []
-        if any(word in content_lower for word in ['meeting', 'conference', 'call']):
+        
+        # Text-based categories
+        if any(word in content_lower for word in ['meeting', 'conference', 'call', 'appointment']):
             categories.append('meeting')
-        if any(word in content_lower for word in ['invoice', 'bill', 'payment']):
+        if any(word in content_lower for word in ['invoice', 'bill', 'payment', 'receipt']):
             categories.append('invoice')
-        if any(word in content_lower for word in ['urgent', 'asap', 'critical']):
+        if any(word in content_lower for word in ['urgent', 'asap', 'critical', 'immediate']):
             categories.append('urgent')
+        if any(word in content_lower for word in ['report', 'analysis', 'summary', 'findings']):
+            categories.append('report')
+        if any(word in content_lower for word in ['contract', 'agreement', 'legal', 'terms']):
+            categories.append('contract')
+        
+        # Attachment-based categories
+        if attachments:
+            categories.append('has_attachments')
+            file_categories = [att.get('file_category', '') for att in attachments]
+            
+            if 'document' in file_categories:
+                categories.append('document')
+            if 'spreadsheet' in file_categories:
+                categories.append('data_analysis')
+            if 'image' in file_categories:
+                categories.append('media')
+            if 'presentation' in file_categories:
+                categories.append('presentation')
+        
         if not categories:
             categories = ['general']
         

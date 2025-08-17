@@ -53,6 +53,22 @@ ai = [
     "requests>=2.31.0",
     "langextract>=0.1.0",
 ]
+rag = [
+    "chromadb>=0.4.0",
+    "sentence-transformers>=2.2.0",
+    "numpy>=1.24.0",
+]
+all = [
+    "ollama>=0.2.1",
+    "requests>=2.31.0",
+    "langextract>=0.1.0",
+    "chromadb>=0.4.0", 
+    "sentence-transformers>=2.2.0",
+    "numpy>=1.24.0",
+    "fastapi>=0.100.0",
+    "uvicorn[standard]>=0.23.0",
+    "websockets>=11.0.0",
+]
 
 [project.urls]
 Homepage = "https://github.com/devraj21/em-ai-lyze"

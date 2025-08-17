@@ -28,6 +28,15 @@ except ImportError:
     AIEmailExtractor = None
     EmailStructuredData = None
 
+try:
+    from .rag_engine import EmailRAGEngine, RAGResult
+    RAG_AVAILABLE = True
+except ImportError:
+    print("Warning: RAG engine not available. Some dependencies may be missing.")
+    RAG_AVAILABLE = False
+    EmailRAGEngine = None
+    RAGResult = None
+
 logger = logging.getLogger(__name__)
 
 @dataclass
@@ -53,14 +62,22 @@ class EmailContent:
     sentiment: str = "neutral"
     ai_summary: str = ""
     ai_priority: str = "medium"
+    
+    # RAG-enhanced fields
+    rag_context: Optional[Any] = None  # RAGResult when RAG available
+    context_summary: str = ""
+    suggested_categories: List[str] = None
+    knowledge_confidence: float = 0.0
 
 class EmailParser:
     """Main email parsing engine"""
     
-    def __init__(self, use_ai: bool = True, ai_model: str = "gemini-1.5-flash", use_local: bool = False):
+    def __init__(self, use_ai: bool = True, ai_model: str = "gemini-1.5-flash", use_local: bool = False, 
+                 use_rag: bool = True, knowledge_base_path: str = "./email_knowledge_base"):
         self.supported_extensions = ['.msg']
         self.use_ai = use_ai and AI_AVAILABLE
         self.use_local = use_local
+        self.use_rag = use_rag and RAG_AVAILABLE
         
         # Initialize AI extractor if available
         if self.use_ai:
@@ -75,6 +92,19 @@ class EmailParser:
         else:
             self.ai_extractor = None
             logger.info("Using traditional regex-based extraction")
+        
+        # Initialize RAG engine if available
+        if self.use_rag:
+            try:
+                self.rag_engine = EmailRAGEngine(knowledge_base_path=knowledge_base_path)
+                logger.info(f"RAG engine enabled with knowledge base: {knowledge_base_path}")
+            except Exception as e:
+                logger.warning(f"Failed to initialize RAG engine: {e}")
+                self.rag_engine = None
+                self.use_rag = False
+        else:
+            self.rag_engine = None
+            logger.info("RAG engine disabled")
         
         # Fixed and improved regex patterns (fallback)
         self.entity_patterns = {
@@ -122,7 +152,34 @@ class EmailParser:
             # Extract attachments
             attachments = self._extract_attachments(msg)
             
-            # AI-Enhanced Processing
+            # RAG-Enhanced Context Retrieval
+            rag_context = None
+            context_summary = ""
+            suggested_categories = []
+            knowledge_confidence = 0.0
+            
+            if self.use_rag and self.rag_engine:
+                try:
+                    # Get initial categories for context retrieval
+                    initial_categories = self._categorize_email(subject, body_text, attachments)
+                    
+                    # Retrieve relevant context from knowledge base
+                    rag_context = self.rag_engine.retrieve_context(
+                        subject=subject,
+                        body=body_text,
+                        categories=initial_categories
+                    )
+                    
+                    context_summary = rag_context.context_summary
+                    suggested_categories = rag_context.suggested_categories
+                    knowledge_confidence = rag_context.confidence_score
+                    
+                    logger.info(f"RAG context retrieved: confidence={knowledge_confidence:.3f}, similar_emails={len(rag_context.similar_emails)}")
+                    
+                except Exception as e:
+                    logger.warning(f"RAG context retrieval failed: {e}")
+            
+            # AI-Enhanced Processing with RAG Context
             ai_structured_data = None
             ai_summary = ""
             ai_priority = "medium"
@@ -130,27 +187,32 @@ class EmailParser:
             
             if self.use_ai and self.ai_extractor:
                 try:
+                    # Pass RAG context to AI extractor for enhanced analysis
                     ai_structured_data = self.ai_extractor.extract_structured_data(
-                        subject, body_text, sender, recipients
+                        subject, body_text, sender, recipients, attachments, rag_context
                     )
                     ai_summary = ai_structured_data.summary
                     ai_priority = ai_structured_data.priority_level
                     sentiment = ai_structured_data.sentiment
-                    # Use AI-extracted entities and categories
+                    
+                    # Combine AI-extracted entities and categories with RAG suggestions
                     extracted_entities = ai_structured_data.entities
-                    categories = ai_structured_data.categories
-                    logger.info("Successfully applied AI extraction")
+                    categories = self._merge_categories(ai_structured_data.categories, suggested_categories)
+                    
+                    logger.info("Successfully applied AI extraction with RAG context")
                 except Exception as e:
                     logger.warning(f"AI extraction failed, falling back to regex: {e}")
-                    # Fallback to traditional extraction
+                    # Fallback to traditional extraction with RAG suggestions
                     combined_text = f"{subject} {body_text}"
                     extracted_entities = self._extract_entities(combined_text)
-                    categories = self._categorize_email(subject, body_text, attachments)
+                    base_categories = self._categorize_email(subject, body_text, attachments)
+                    categories = self._merge_categories(base_categories, suggested_categories)
             else:
-                # Traditional extraction
+                # Traditional extraction with RAG suggestions
                 combined_text = f"{subject} {body_text}"
                 extracted_entities = self._extract_entities(combined_text)
-                categories = self._categorize_email(subject, body_text, attachments)
+                base_categories = self._categorize_email(subject, body_text, attachments)
+                categories = self._merge_categories(base_categories, suggested_categories)
             
             # Calculate correlation score
             correlation_score = self._calculate_correlation(subject, body_text, attachments)
@@ -180,8 +242,21 @@ class EmailParser:
                 ai_structured_data=ai_structured_data,
                 sentiment=sentiment,
                 ai_summary=ai_summary,
-                ai_priority=ai_priority
+                ai_priority=ai_priority,
+                # RAG-enhanced fields
+                rag_context=rag_context,
+                context_summary=context_summary,
+                suggested_categories=suggested_categories,
+                knowledge_confidence=knowledge_confidence
             )
+            
+            # Store this email in RAG knowledge base for future reference
+            if self.use_rag and self.rag_engine:
+                try:
+                    self.rag_engine.add_email_knowledge(email_content)
+                    logger.info("Email knowledge stored for future RAG retrieval")
+                except Exception as e:
+                    logger.warning(f"Failed to store email knowledge: {e}")
             
             logger.info(f"Successfully parsed email: {subject[:50]}...")
             return email_content
@@ -200,23 +275,140 @@ class EmailParser:
         return [r.strip() for r in recipients if r.strip()]
     
     def _extract_attachments(self, msg) -> List[Dict[str, Any]]:
-        """Extract attachment information"""
+        """Extract attachment information with content analysis"""
         attachments = []
         
         try:
             for attachment in msg.attachments:
+                filename = getattr(attachment, 'longFilename', '') or getattr(attachment, 'shortFilename', '')
+                content_type = getattr(attachment, 'mimetype', '')
+                size = getattr(attachment, 'size', 0)
+                
                 att_info = {
-                    'filename': getattr(attachment, 'longFilename', '') or 
-                               getattr(attachment, 'shortFilename', ''),
-                    'size': getattr(attachment, 'size', 0),
-                    'content_type': getattr(attachment, 'mimetype', ''),
+                    'filename': filename,
+                    'size': size,
+                    'content_type': content_type,
                     'is_embedded': hasattr(attachment, 'cid'),
+                    'content_preview': '',
+                    'content_summary': '',
+                    'extracted_text': '',
+                    'file_category': self._categorize_file_type(filename, content_type),
                 }
+                
+                # Extract content from readable file types
+                try:
+                    att_info['extracted_text'] = self._extract_attachment_content(attachment, filename, content_type)
+                    if att_info['extracted_text']:
+                        att_info['content_preview'] = att_info['extracted_text'][:200] + ('...' if len(att_info['extracted_text']) > 200 else '')
+                        # Generate AI summary if available
+                        if self.use_ai and self.ai_extractor and att_info['extracted_text'].strip():
+                            att_info['content_summary'] = self._summarize_attachment_content(att_info['extracted_text'])
+                except Exception as e:
+                    logger.warning(f"Error extracting content from attachment {filename}: {e}")
+                
                 attachments.append(att_info)
         except Exception as e:
             logger.warning(f"Error extracting attachments: {e}")
         
         return attachments
+    
+    def _categorize_file_type(self, filename: str, content_type: str) -> str:
+        """Categorize file type for better analysis"""
+        if not filename:
+            return 'unknown'
+        
+        ext = filename.lower().split('.')[-1] if '.' in filename else ''
+        
+        # Document types
+        if ext in ['pdf', 'doc', 'docx', 'txt', 'rtf', 'odt']:
+            return 'document'
+        # Spreadsheet types
+        elif ext in ['xls', 'xlsx', 'csv', 'ods']:
+            return 'spreadsheet'
+        # Image types
+        elif ext in ['jpg', 'jpeg', 'png', 'gif', 'bmp', 'tiff', 'svg']:
+            return 'image'
+        # Presentation types
+        elif ext in ['ppt', 'pptx', 'odp']:
+            return 'presentation'
+        # Code/text files
+        elif ext in ['py', 'js', 'html', 'css', 'json', 'xml', 'sql']:
+            return 'code'
+        # Archive types
+        elif ext in ['zip', 'rar', '7z', 'tar', 'gz']:
+            return 'archive'
+        # Media types
+        elif ext in ['mp4', 'avi', 'mkv', 'mp3', 'wav', 'flac']:
+            return 'media'
+        else:
+            return 'other'
+    
+    def _extract_attachment_content(self, attachment, filename: str, content_type: str) -> str:
+        """Extract readable content from attachments"""
+        try:
+            # Only extract from text-readable files to avoid binary data
+            file_ext = filename.lower().split('.')[-1] if '.' in filename else ''
+            
+            # Text files that can be safely read
+            text_extensions = ['txt', 'csv', 'json', 'xml', 'html', 'htm', 'py', 'js', 'css', 'sql', 'log']
+            
+            if file_ext in text_extensions:
+                # Get attachment data
+                if hasattr(attachment, 'data') and attachment.data:
+                    try:
+                        # Try to decode as UTF-8 text
+                        content = attachment.data.decode('utf-8', errors='ignore')
+                        return content[:5000]  # Limit to first 5000 characters
+                    except Exception:
+                        # Try other common encodings
+                        for encoding in ['latin1', 'cp1252', 'ascii']:
+                            try:
+                                content = attachment.data.decode(encoding, errors='ignore')
+                                return content[:5000]
+                            except Exception:
+                                continue
+            
+            # For other file types, return empty string (could be extended with specialized libraries)
+            return ""
+            
+        except Exception as e:
+            logger.warning(f"Error extracting content from {filename}: {e}")
+            return ""
+    
+    def _summarize_attachment_content(self, content: str) -> str:
+        """Generate AI summary of attachment content"""
+        try:
+            if not content.strip() or not self.use_ai or not self.ai_extractor:
+                return ""
+            
+            summary_prompt = """
+            Provide a concise 1-2 sentence summary of this attachment content.
+            Focus on the main purpose, key information, or primary topic.
+            Keep it brief and informative.
+            """
+            
+            import langextract as lx
+            
+            result = lx.extract(
+                text_or_documents=content[:1000],  # Limit content for summary
+                prompt_description=summary_prompt,
+                examples=[],
+                model_id=self.ai_extractor.model_id
+            )
+            
+            # Extract summary from result
+            if hasattr(result, 'extractions') and result.extractions:
+                for extraction in result.extractions:
+                    if hasattr(extraction, 'extraction_text'):
+                        summary = str(extraction.extraction_text).strip()
+                        if summary:
+                            return summary[:200]  # Limit summary length
+            
+            return ""
+            
+        except Exception as e:
+            logger.warning(f"Error generating attachment summary: {e}")
+            return ""
     
     def _extract_entities(self, text: str) -> Dict[str, List[str]]:
         """Extract entities from text using regex patterns"""
@@ -234,27 +426,228 @@ class EmailParser:
         return entities
     
     def _calculate_correlation(self, subject: str, body: str, attachments: List[Dict]) -> float:
-        """Calculate correlation score between subject, body, and attachments"""
+        """Calculate enhanced correlation score between subject, body, and attachments"""
+        try:
+            # Use AI-enhanced semantic correlation if available
+            if self.use_ai and self.ai_extractor:
+                return self._calculate_ai_correlation(subject, body, attachments)
+            else:
+                return self._calculate_basic_correlation(subject, body, attachments)
+        except Exception as e:
+            logger.warning(f"Error calculating correlation, using basic method: {e}")
+            return self._calculate_basic_correlation(subject, body, attachments)
+    
+    def _calculate_ai_correlation(self, subject: str, body: str, attachments: List[Dict]) -> float:
+        """AI-enhanced semantic correlation analysis with simplified approach"""
+        try:
+            # Use a simpler, more reliable approach for correlation analysis
+            correlation_prompt = f"""
+            Rate the correlation between these email components on a scale from 0.0 to 1.0:
+            
+            Subject: "{subject}"
+            Body: "{body[:500]}{'...' if len(body) > 500 else ''}"
+            Attachments: {len(attachments)} files - {', '.join([att.get('filename', 'unnamed') for att in attachments[:3]])}
+            
+            Score meanings:
+            - 0.9-1.0: Perfect alignment (all components discuss same topic)
+            - 0.7-0.8: High correlation (strongly related topics)
+            - 0.5-0.6: Medium correlation (some relationship)
+            - 0.3-0.4: Low correlation (minimal relationship)
+            - 0.0-0.2: No correlation (unrelated content)
+            
+            Respond with just the numeric score (e.g., 0.75).
+            """
+            
+            # Skip AI correlation for now and use enhanced basic correlation
+            # The LangExtract structured extraction is too complex for correlation scoring
+            logger.info("Skipping AI correlation, using enhanced basic correlation")
+            
+            # If AI fails, use enhanced basic correlation with better logic
+            logger.info("Using enhanced basic correlation analysis")
+            return self._calculate_enhanced_basic_correlation(subject, body, attachments)
+            
+        except Exception as e:
+            logger.warning(f"AI correlation analysis failed: {e}")
+            return self._calculate_basic_correlation(subject, body, attachments)
+    
+    def _calculate_enhanced_basic_correlation(self, subject: str, body: str, attachments: List[Dict]) -> float:
+        """Enhanced basic correlation with better semantic understanding"""
         score = 0.0
         
-        # Subject-body correlation
+        # Clean and prepare text
+        subject_clean = ' '.join(subject.lower().split())
+        body_clean = ' '.join(body.lower().split())
+        
+        # Extract meaningful words (longer than 3 chars, not common words)
+        stop_words = {'the', 'and', 'for', 'are', 'but', 'not', 'you', 'all', 'can', 'had', 'her', 'was', 'one', 'our', 'out', 'day', 'get', 'has', 'him', 'his', 'how', 'its', 'may', 'new', 'now', 'old', 'see', 'two', 'who', 'boy', 'did', 'she', 'use', 'way', 'what', 'when', 'your', 'said', 'each', 'make', 'most', 'over', 'said', 'some', 'time', 'very', 'when', 'come', 'here', 'just', 'like', 'long', 'many', 'over', 'such', 'take', 'than', 'them', 'well', 'were'}
+        
+        subject_words = set([w for w in re.findall(r'\w{4,}', subject_clean) if w not in stop_words])
+        body_words = set([w for w in re.findall(r'\w{4,}', body_clean) if w not in stop_words])
+        
+        # Subject-Body correlation with weight for word length
+        if subject_words and body_words:
+            common_words = subject_words.intersection(body_words)
+            if common_words:
+                # Weight by average word length (longer words are more meaningful)
+                avg_length = sum(len(word) for word in common_words) / len(common_words)
+                length_factor = min(1.5, avg_length / 6)  # Boost for longer words
+                
+                base_score = len(common_words) / len(subject_words)
+                score += base_score * length_factor * 0.8  # 80% weight for subject-body
+        
+        # Subject-Attachment correlation
+        if attachments:
+            att_scores = []
+            for att in attachments:
+                att_score = 0.0
+                filename = att.get('filename', '').lower()
+                file_category = att.get('file_category', '')
+                content_summary = att.get('content_summary', '').lower()
+                
+                # Filename-subject correlation
+                if filename:
+                    filename_words = set(re.findall(r'\w{3,}', filename))
+                    filename_common = filename_words.intersection(subject_words)
+                    if filename_common:
+                        att_score += len(filename_common) / max(len(subject_words), 1) * 0.4
+                
+                # Content summary correlation
+                if content_summary:
+                    summary_words = set(re.findall(r'\w{4,}', content_summary))
+                    summary_common = summary_words.intersection(subject_words.union(body_words))
+                    if summary_common:
+                        att_score += len(summary_common) / max(len(subject_words) + len(body_words), 1) * 0.6
+                
+                # Contextual relevance based on file type and subject
+                context_boost = self._get_context_relevance_boost(subject_clean, file_category)
+                att_score += context_boost
+                
+                att_scores.append(min(att_score, 1.0))
+            
+            # Average attachment correlation with reduced weight
+            if att_scores:
+                avg_att_score = sum(att_scores) / len(att_scores)
+                score += avg_att_score * 0.2  # 20% weight for attachments
+        
+        # Quality penalties and bonuses
+        if len(subject.strip()) < 5:
+            score *= 0.7  # Penalty for very short subjects
+        if len(body.strip()) < 20:
+            score *= 0.8  # Penalty for very short bodies
+            
+        # Bonus for well-structured content
+        if ':' in subject or '-' in subject:  # Structured subjects
+            score *= 1.1
+        
+        return min(score, 1.0)
+    
+    def _get_context_relevance_boost(self, subject: str, file_category: str) -> float:
+        """Get context relevance boost based on subject content and file type"""
+        boost = 0.0
+        
+        context_mappings = {
+            'document': ['report', 'document', 'memo', 'proposal', 'contract', 'agreement'],
+            'spreadsheet': ['budget', 'data', 'analysis', 'financial', 'numbers', 'calculation'],
+            'image': ['photo', 'image', 'screenshot', 'picture', 'diagram', 'chart'],
+            'presentation': ['presentation', 'slides', 'meeting', 'demo', 'overview']
+        }
+        
+        if file_category in context_mappings:
+            keywords = context_mappings[file_category]
+            if any(keyword in subject for keyword in keywords):
+                boost = 0.15  # 15% boost for contextual relevance
+        
+        return boost
+    
+    def _calculate_basic_correlation(self, subject: str, body: str, attachments: List[Dict]) -> float:
+        """Basic correlation analysis using word overlap (fallback method)"""
+        score = 0.0
+        
+        # Enhanced subject-body correlation with better text processing
         subject_words = set(re.findall(r'\w+', subject.lower()))
         body_words = set(re.findall(r'\w+', body.lower()))
         
-        if subject_words and body_words:
-            common_words = subject_words.intersection(body_words)
-            score += len(common_words) / max(len(subject_words), len(body_words))
+        # Remove common stop words for better correlation
+        stop_words = {'the', 'a', 'an', 'and', 'or', 'but', 'in', 'on', 'at', 'to', 'for', 'of', 'with', 'by', 'is', 'are', 'was', 'were', 'be', 'been', 'have', 'has', 'had', 'will', 'would', 'could', 'should', 'may', 'might', 'can', 'do', 'does', 'did', 'get', 'got', 'go', 'went', 'come', 'came', 'see', 'saw', 'know', 'knew', 'think', 'thought', 'say', 'said', 'tell', 'told', 'ask', 'asked', 'give', 'gave', 'take', 'took', 'make', 'made', 'find', 'found', 'look', 'looked', 'use', 'used', 'want', 'wanted', 'need', 'needed', 'try', 'tried', 'work', 'worked', 'call', 'called', 'put', 'put', 'end', 'ended', 'why', 'what', 'where', 'when', 'who', 'how', 'all', 'any', 'both', 'each', 'few', 'more', 'most', 'other', 'some', 'such', 'no', 'nor', 'not', 'only', 'own', 'same', 'so', 'than', 'too', 'very', 'just', 'now', 'here', 'there', 'then', 'them', 'they', 'their', 'this', 'that', 'these', 'those', 'he', 'she', 'it', 'we', 'you', 'i', 'me', 'my', 'your', 'his', 'her', 'its', 'our'}
         
-        # Subject-attachment correlation
+        subject_words_filtered = subject_words - stop_words
+        body_words_filtered = body_words - stop_words
+        
+        if subject_words_filtered and body_words_filtered:
+            common_words = subject_words_filtered.intersection(body_words_filtered)
+            # Enhanced scoring considering word importance
+            if common_words:
+                word_score = len(common_words) / max(len(subject_words_filtered), len(body_words_filtered))
+                # Boost score for longer common words (more meaningful)
+                length_boost = sum(len(word) for word in common_words) / (len(common_words) * 10)  # Normalize by average word length
+                score += word_score + (length_boost * 0.1)
+        
+        # Enhanced subject-attachment correlation
         if attachments:
-            attachment_names = [att.get('filename', '').lower() for att in attachments]
-            for name in attachment_names:
-                name_words = set(re.findall(r'\w+', name))
-                if name_words and subject_words:
-                    common = name_words.intersection(subject_words)
-                    score += len(common) / len(subject_words) * 0.5  # Weight attachment correlation less
+            attachment_scores = []
+            for att in attachments:
+                att_score = 0.0
+                filename = att.get('filename', '').lower()
+                
+                if filename:
+                    # Filename correlation
+                    name_words = set(re.findall(r'\w+', filename)) - stop_words
+                    if name_words and subject_words_filtered:
+                        name_common = name_words.intersection(subject_words_filtered)
+                        if name_common:
+                            att_score += len(name_common) / len(subject_words_filtered)
+                    
+                    # File type relevance to subject
+                    file_ext = filename.split('.')[-1] if '.' in filename else ''
+                    subject_lower = subject.lower()
+                    
+                    # Context-based file relevance
+                    doc_indicators = ['report', 'document', 'proposal', 'contract', 'agreement']
+                    image_indicators = ['photo', 'image', 'screenshot', 'diagram', 'chart']
+                    spreadsheet_indicators = ['budget', 'data', 'analysis', 'numbers', 'financial']
+                    
+                    if file_ext in ['pdf', 'doc', 'docx'] and any(ind in subject_lower for ind in doc_indicators):
+                        att_score += 0.3
+                    elif file_ext in ['jpg', 'png', 'gif', 'bmp'] and any(ind in subject_lower for ind in image_indicators):
+                        att_score += 0.3
+                    elif file_ext in ['xls', 'xlsx', 'csv'] and any(ind in subject_lower for ind in spreadsheet_indicators):
+                        att_score += 0.3
+                
+                attachment_scores.append(att_score)
+            
+            # Average attachment correlation, weighted less than subject-body
+            if attachment_scores:
+                avg_att_score = sum(attachment_scores) / len(attachment_scores)
+                score += avg_att_score * 0.3  # Reduced weight for attachments
+        
+        # Penalize very short subjects or bodies (likely spam or incomplete)
+        if len(subject.strip()) < 3 or len(body.strip()) < 10:
+            score *= 0.5
         
         return min(score, 1.0)  # Cap at 1.0
+    
+    def _merge_categories(self, base_categories: List[str], suggested_categories: List[str]) -> List[str]:
+        """Merge base categories with RAG-suggested categories"""
+        if not suggested_categories:
+            return base_categories
+        
+        # Combine and deduplicate categories
+        combined = list(set(base_categories + suggested_categories))
+        
+        # Prioritize certain categories
+        priority_categories = ['urgent', 'important', 'meeting', 'invoice', 'contract']
+        prioritized = []
+        regular = []
+        
+        for cat in combined:
+            if cat in priority_categories:
+                prioritized.append(cat)
+            else:
+                regular.append(cat)
+        
+        # Limit total categories to prevent overflow
+        final_categories = prioritized + regular
+        return final_categories[:8]  # Limit to 8 categories max
     
     def _categorize_email(self, subject: str, body: str, attachments: List[Dict]) -> List[str]:
         """Categorize email based on content"""

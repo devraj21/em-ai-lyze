@@ -11,7 +11,7 @@ from pathlib import Path
 # Add src to path for imports
 sys.path.insert(0, str(Path(__file__).parent / "src"))
 
-def parse_single_file(file_path: str, use_local: bool = False, ai_model: str = "gemini-1.5-flash", output_format: str = "summary") -> None:
+def parse_single_file(file_path: str, use_local: bool = True, ai_model: str = "auto", output_format: str = "summary") -> None:
     """Parse a single email file"""
     try:
         from email_parser.parser import EmailParser
@@ -97,7 +97,7 @@ def parse_single_file(file_path: str, use_local: bool = False, ai_model: str = "
         print(f"❌ Error parsing email: {e}")
         sys.exit(1)
 
-def parse_folder(folder_path: str, use_local: bool = False, ai_model: str = "gemini-1.5-flash", output_format: str = "summary") -> None:
+def parse_folder(folder_path: str, use_local: bool = True, ai_model: str = "auto", output_format: str = "summary") -> None:
     """Parse all emails in a folder"""
     try:
         from email_parser.parser import EmailParser
@@ -358,22 +358,25 @@ Examples:
     # Parse single file
     parse_parser = subparsers.add_parser('parse', help='Parse a single email file')
     parse_parser.add_argument('--file', required=True, help='Path to .msg email file')
-    parse_parser.add_argument('--local', action='store_true', help='Use local Ollama models')
-    parse_parser.add_argument('--model', default='gemini-1.5-flash', help='AI model to use')
+    parse_parser.add_argument('--local', action='store_true', default=True, help='Use local Ollama models (default)')
+    parse_parser.add_argument('--cloud', action='store_true', help='Use cloud AI (requires API key)')
+    parse_parser.add_argument('--model', default='auto', help='AI model to use (auto-detects best available)')
     parse_parser.add_argument('--output', choices=['summary', 'detailed', 'json'], default='summary', help='Output format')
     
     # Parse folder
     folder_parser = subparsers.add_parser('parse-folder', help='Parse all emails in a folder')
     folder_parser.add_argument('--folder', required=True, help='Path to folder containing .msg files')
-    folder_parser.add_argument('--local', action='store_true', help='Use local Ollama models')
-    folder_parser.add_argument('--model', default='gemini-1.5-flash', help='AI model to use')
+    folder_parser.add_argument('--local', action='store_true', default=True, help='Use local Ollama models (default)')
+    folder_parser.add_argument('--cloud', action='store_true', help='Use cloud AI (requires API key)')
+    folder_parser.add_argument('--model', default='auto', help='AI model to use (auto-detects best available)')
     folder_parser.add_argument('--output', choices=['summary', 'detailed'], default='summary', help='Output format')
     
     # Extract entities
     extract_parser = subparsers.add_parser('extract', help='Extract entities from text')
     extract_parser.add_argument('--text', required=True, help='Text to analyze')
-    extract_parser.add_argument('--local', action='store_true', help='Use local Ollama models')
-    extract_parser.add_argument('--model', default='gemini-1.5-flash', help='AI model to use')
+    extract_parser.add_argument('--local', action='store_true', default=True, help='Use local Ollama models (default)')
+    extract_parser.add_argument('--cloud', action='store_true', help='Use cloud AI (requires API key)')
+    extract_parser.add_argument('--model', default='auto', help='AI model to use (auto-detects best available)')
     
     # Compare processing
     compare_parser = subparsers.add_parser('compare', help='Compare local vs cloud processing')
@@ -390,11 +393,14 @@ Examples:
     
     # Execute commands
     if args.command == 'parse':
-        parse_single_file(args.file, args.local, args.model, args.output)
+        use_local = not getattr(args, 'cloud', False)  # Use local unless --cloud specified
+        parse_single_file(args.file, use_local, args.model, args.output)
     elif args.command == 'parse-folder':
-        parse_folder(args.folder, args.local, args.model, args.output)
+        use_local = not getattr(args, 'cloud', False)  # Use local unless --cloud specified
+        parse_folder(args.folder, use_local, args.model, args.output)
     elif args.command == 'extract':
-        extract_entities(args.text, args.local, args.model)
+        use_local = not getattr(args, 'cloud', False)  # Use local unless --cloud specified
+        extract_entities(args.text, use_local, args.model)
     elif args.command == 'compare':
         compare_processing(args.file)
     elif args.command == 'test':
