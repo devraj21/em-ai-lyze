@@ -1,3 +1,6 @@
+# System Architecture Flowchart
+
+```mermaid
 flowchart TD
     A[User] --> B[Web UI]
     B -->|Request| C[FastAPI/Uvicorn]
@@ -22,3 +25,4 @@ flowchart TD
     style C fill:#ff9800,stroke:#e65100,stroke-width:3px,color:#ffffff
     style E fill:#9c27b0,stroke:#4a148c,stroke-width:3px,color:#ffffff
     style F fill:#f44336,stroke:#b71c1c,stroke-width:3px,color:#ffffff
+```
