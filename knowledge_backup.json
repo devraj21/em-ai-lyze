@@ -1,0 +1,2003 @@
+{
+  "export_date": "/Users/devrajsingh/github/devraj21/em-ai-lyze",
+  "total_emails": 63,
+  "emails": [
+    {
+      "id": "b66cbfbe74ef20fc98731d1826ed9e23",
+      "subject": "240607 PMI Bonelli Erde Pappalardo LLP 5590875172 Membership pack (Poppy Black)",
+      "body_summary": "240607 PMI Bonelli Erde Pappalardo LLP 5590875172 Membership pack (Poppy Black)",
+      "categories": [
+        "contract",
+        "urgent",
+        "general",
+        "support"
+      ],
+      "entities": {},
+      "patterns": {
+        "correlation_score": 0.5185185185185186,
+        "priority": "medium",
+        "sentiment": "neutral",
+        "has_attachments": false,
+        "attachment_types": []
+      },
+      "context": {
+        "sender": "",
+        "recipients_count": 0,
+        "body_length": 11167,
+        "subject_length": 79
+      },
+      "timestamp": "2025-08-18T12:42:38.064707"
+    },
+    {
+      "id": "d791411d97bde9f2db55b700d6bcc44f",
+      "subject": "FW: (KH) Leaver - BUPA - Malik Bem",
+      "body_summary": "FW: (KH) Leaver - BUPA - Malik Bem",
+      "categories": [
+        "general",
+        "support"
+      ],
+      "entities": {},
+      "patterns": {
+        "correlation_score": 0.44000000000000006,
+        "priority": "low",
+        "sentiment": "neutral",
+        "has_attachments": false,
+        "attachment_types": []
+      },
+      "context": {
+        "sender": "",
+        "recipients_count": 0,
+        "body_length": 639,
+        "subject_length": 34
+      },
+      "timestamp": "2025-08-18T12:38:44.317594"
+    },
+    {
+      "id": "11455618d744729e2e2241c67966892d",
+      "subject": "Add dependent",
+      "body_summary": "Add dependent",
+      "categories": [
+        "general"
+      ],
+      "entities": {},
+      "patterns": {
+        "correlation_score": 1.0,
+        "priority": "low",
+        "sentiment": "neutral",
+        "has_attachments": true,
+        "attachment_types": [
+          "image",
+          "image",
+          "image",
+          "image",
+          "image"
+        ]
+      },
+      "context": {
+        "sender": "",
+        "recipients_count": 0,
+        "body_length": 727,
+        "subject_length": 13
+      },
+      "timestamp": "2025-08-18T11:12:19.015724"
+    },
+    {
+      "id": "3d29ec8b1c7065ec233dc5d7350bd5b7",
+      "subject": "0438765329 Imogen Wrigley",
+      "body_summary": "0438765329 Imogen Wrigley",
+      "categories": [
+        "general"
+      ],
+      "entities": {},
+      "patterns": {
+        "correlation_score": 0.0,
+        "priority": "low",
+        "sentiment": "neutral",
+        "has_attachments": false,
+        "attachment_types": []
+      },
+      "context": {
+        "sender": "",
+        "recipients_count": 0,
+        "body_length": 160,
+        "subject_length": 25
+      },
+      "timestamp": "2025-08-18T11:11:15.314874"
+    },
+    {
+      "id": "3f42865a1fff97c18950d74c29e9fa69",
+      "subject": "FW: 55389763617 -  Chalk UK: Team Benefits Announcement",
+      "body_summary": "FW: 55389763617 -  Chalk UK: Team Benefits Announcement",
+      "categories": [
+        "general"
+      ],
+      "entities": {},
+      "patterns": {
+        "correlation_score": 0.0,
+        "priority": "medium",
+        "sentiment": "neutral",
+        "has_attachments": false,
+        "attachment_types": []
+      },
+      "context": {
+        "sender": "",
+        "recipients_count": 0,
+        "body_length": 104,
+        "subject_length": 55
+      },
+      "timestamp": "2025-08-18T11:10:39.217176"
+    },
+    {
+      "id": "f5428d39ff99be13830a6811daa938d5",
+      "subject": "FW: 0729186075 Merry Henchmen",
+      "body_summary": "FW: 0729186075 Merry Henchmen",
+      "categories": [
+        "general"
+      ],
+      "entities": {},
+      "patterns": {
+        "correlation_score": 0.0,
+        "priority": "medium",
+        "sentiment": "neutral",
+        "has_attachments": false,
+        "attachment_types": []
+      },
+      "context": {
+        "sender": "",
+        "recipients_count": 0,
+        "body_length": 317,
+        "subject_length": 29
+      },
+      "timestamp": "2025-08-18T11:10:08.432449"
+    },
+    {
+      "id": "d61a7505c65309141076bca90701fa0e",
+      "subject": "FW: 240103 PMI Baker Botts 27190765507 COD (Maya Kairon)",
+      "body_summary": "FW: 240103 PMI Baker Botts 27190765507 COD (Maya Kairon)",
+      "categories": [
+        "general"
+      ],
+      "entities": {},
+      "patterns": {
+        "correlation_score": 0.2444444444444445,
+        "priority": "low",
+        "sentiment": "negative",
+        "has_attachments": false,
+        "attachment_types": []
+      },
+      "context": {
+        "sender": "",
+        "recipients_count": 0,
+        "body_length": 372,
+        "subject_length": 56
+      },
+      "timestamp": "2025-08-18T11:09:37.292129"
+    },
+    {
+      "id": "156d8c57cc00733ab76331f29d165a7a",
+      "subject": "FW: 38414278732",
+      "body_summary": "FW: 38414278732",
+      "categories": [
+        "general"
+      ],
+      "entities": {},
+      "patterns": {
+        "correlation_score": 0.0,
+        "priority": "low",
+        "sentiment": "neutral",
+        "has_attachments": false,
+        "attachment_types": []
+      },
+      "context": {
+        "sender": "",
+        "recipients_count": 0,
+        "body_length": 1566,
+        "subject_length": 15
+      },
+      "timestamp": "2025-08-18T11:08:47.767529"
+    },
+    {
+      "id": "830c1dfa2fe212a6928f52f1a6a0cec6",
+      "subject": "240610 PMI 55313014316 Leaver (Paul Ozard)",
+      "body_summary": "240610 PMI 55313014316 Leaver (Paul Ozard)",
+      "categories": [
+        "general"
+      ],
+      "entities": {},
+      "patterns": {
+        "correlation_score": 0.4,
+        "priority": "low",
+        "sentiment": "neutral",
+        "has_attachments": false,
+        "attachment_types": []
+      },
+      "context": {
+        "sender": "",
+        "recipients_count": 0,
+        "body_length": 601,
+        "subject_length": 42
+      },
+      "timestamp": "2025-08-18T10:52:56.287560"
+    },
+    {
+      "id": "c5db49e9f9523a2c84063eb218b73e9a",
+      "subject": "Sacquire - Member update",
+      "body_summary": "Sacquire - Member update",
+      "categories": [
+        "general"
+      ],
+      "entities": {},
+      "patterns": {
+        "correlation_score": 0.0,
+        "priority": "low",
+        "sentiment": "neutral",
+        "has_attachments": true,
+        "attachment_types": [
+          "image"
+        ]
+      },
+      "context": {
+        "sender": "",
+        "recipients_count": 0,
+        "body_length": 2310,
+        "subject_length": 24
+      },
+      "timestamp": "2025-08-18T10:52:16.285773"
+    },
+    {
+      "id": "574129475b154a22bfcab99afb4a6256",
+      "subject": "Bupa Baby - Didkins, Becca 06117954218",
+      "body_summary": "Bupa Baby - Didkins, Becca 06117954218",
+      "categories": [
+        "general"
+      ],
+      "entities": {},
+      "patterns": {
+        "correlation_score": 0.4693333333333334,
+        "priority": "low",
+        "sentiment": "neutral",
+        "has_attachments": false,
+        "attachment_types": []
+      },
+      "context": {
+        "sender": "",
+        "recipients_count": 0,
+        "body_length": 1959,
+        "subject_length": 38
+      },
+      "timestamp": "2025-08-18T10:50:27.962068"
+    },
+    {
+      "id": "7dea324921a9244f5b17187e61f6ac8b",
+      "subject": "FW: 55387554493 The Engine Techy Group ",
+      "body_summary": "FW: 55387554493 The Engine Techy Group",
+      "categories": [
+        "general"
+      ],
+      "entities": {},
+      "patterns": {
+        "correlation_score": 0.0,
+        "priority": "medium",
+        "sentiment": "neutral",
+        "has_attachments": true,
+        "attachment_types": [
+          "image",
+          "image"
+        ]
+      },
+      "context": {
+        "sender": "",
+        "recipients_count": 0,
+        "body_length": 881,
+        "subject_length": 39
+      },
+      "timestamp": "2025-08-18T10:49:06.717563"
+    },
+    {
+      "id": "a57a7a6ab48db68f024bde16b6fa6cad",
+      "subject": " 240202 PMI Carl Tower 389631587945 Joiners",
+      "body_summary": "240202 PMI Carl Tower 389631587945 Joiners",
+      "categories": [
+        "general"
+      ],
+      "entities": {},
+      "patterns": {
+        "correlation_score": 0.32000000000000006,
+        "priority": "medium",
+        "sentiment": "neutral",
+        "has_attachments": false,
+        "attachment_types": []
+      },
+      "context": {
+        "sender": "",
+        "recipients_count": 0,
+        "body_length": 1288,
+        "subject_length": 43
+      },
+      "timestamp": "2025-08-18T10:44:23.619781"
+    },
+    {
+      "id": "99edb8647103ab5cb8f5ff9a4abf6097",
+      "subject": "FW: Please add member to grp - Mayo Limited 55315987651",
+      "body_summary": "FW: Please add member to grp - Mayo Limited 55315987651",
+      "categories": [
+        "general"
+      ],
+      "entities": {},
+      "patterns": {
+        "correlation_score": 0.3520000000000001,
+        "priority": "low",
+        "sentiment": "neutral",
+        "has_attachments": true,
+        "attachment_types": [
+          "image",
+          "image",
+          "image",
+          "image",
+          "image",
+          "image"
+        ]
+      },
+      "context": {
+        "sender": "",
+        "recipients_count": 0,
+        "body_length": 1035,
+        "subject_length": 55
+      },
+      "timestamp": "2025-08-18T04:31:52.442578"
+    },
+    {
+      "id": "93a07523f10cd529c9631e0233153230",
+      "subject": "Leaver Error",
+      "body_summary": "Leaver Error",
+      "categories": [
+        "general"
+      ],
+      "entities": {},
+      "patterns": {
+        "correlation_score": 0.7333333333333334,
+        "priority": "high",
+        "sentiment": "neutral",
+        "has_attachments": true,
+        "attachment_types": [
+          "image"
+        ]
+      },
+      "context": {
+        "sender": "",
+        "recipients_count": 0,
+        "body_length": 2102,
+        "subject_length": 12
+      },
+      "timestamp": "2025-08-18T02:19:13.147047"
+    },
+    {
+      "id": "9bec7ee57029d417c24d25f50d1bbbd6",
+      "subject": "990607 PMI 55765430414 Leaver",
+      "body_summary": "990607 PMI 55765430414 Leaver",
+      "categories": [
+        "general"
+      ],
+      "entities": {},
+      "patterns": {
+        "correlation_score": 0.0,
+        "priority": "low",
+        "sentiment": "neutral",
+        "has_attachments": false,
+        "attachment_types": []
+      },
+      "context": {
+        "sender": "",
+        "recipients_count": 0,
+        "body_length": 649,
+        "subject_length": 29
+      },
+      "timestamp": "2025-08-17T23:35:47.279634"
+    },
+    {
+      "id": "1a5b88ebbb9e4bab55f1fb1791c70a1b",
+      "subject": "Eve Partners - Membership Amendments",
+      "body_summary": "Eve Partners - Membership Amendments",
+      "categories": [
+        "general"
+      ],
+      "entities": {},
+      "patterns": {
+        "correlation_score": 0.8800000000000001,
+        "priority": "low",
+        "sentiment": "neutral",
+        "has_attachments": true,
+        "attachment_types": [
+          "image",
+          "image",
+          "image",
+          "image"
+        ]
+      },
+      "context": {
+        "sender": "",
+        "recipients_count": 0,
+        "body_length": 2086,
+        "subject_length": 36
+      },
+      "timestamp": "2025-08-17T23:12:37.271560"
+    },
+    {
+      "id": "8c34480540ced7cbb6815357e311e4bc",
+      "subject": "Imsure - 55001125352 - 2023 Private Medical Insurance Renewal",
+      "body_summary": "Imsure - 55001125352 - 2023 Private Medical Insurance Renewal",
+      "categories": [
+        "general"
+      ],
+      "entities": {},
+      "patterns": {
+        "correlation_score": 0.14666666666666667,
+        "priority": "low",
+        "sentiment": "neutral",
+        "has_attachments": true,
+        "attachment_types": [
+          "image",
+          "image",
+          "image",
+          "image"
+        ]
+      },
+      "context": {
+        "sender": "",
+        "recipients_count": 0,
+        "body_length": 1941,
+        "subject_length": 61
+      },
+      "timestamp": "2025-08-17T19:46:48.458109"
+    },
+    {
+      "id": "a3348e42508d9be5a18404233eec48bf",
+      "subject": "55376588840 - Fidel Market Limited",
+      "body_summary": "55376588840 - Fidel Market Limited",
+      "categories": [
+        "general"
+      ],
+      "entities": {},
+      "patterns": {
+        "correlation_score": 0.0,
+        "priority": "low",
+        "sentiment": "neutral",
+        "has_attachments": true,
+        "attachment_types": [
+          "image"
+        ]
+      },
+      "context": {
+        "sender": "",
+        "recipients_count": 0,
+        "body_length": 1249,
+        "subject_length": 34
+      },
+      "timestamp": "2025-08-17T17:31:33.544848"
+    },
+    {
+      "id": "2b0e62077ce5eda05c203c02ff8bd9bc",
+      "subject": "Alpine Race - 98748000002",
+      "body_summary": "Alpine Race - 98748000002",
+      "categories": [
+        "general"
+      ],
+      "entities": {},
+      "patterns": {
+        "correlation_score": 0.0,
+        "priority": "low",
+        "sentiment": "neutral",
+        "has_attachments": true,
+        "attachment_types": [
+          "image"
+        ]
+      },
+      "context": {
+        "sender": "",
+        "recipients_count": 0,
+        "body_length": 1711,
+        "subject_length": 25
+      },
+      "timestamp": "2025-08-17T17:30:09.939160"
+    },
+    {
+      "id": "5082b733398a8ca763a58460a638a7b9",
+      "subject": "FW: 5555081817 Pop Limited",
+      "body_summary": "FW: 5555081817 Pop Limited",
+      "categories": [
+        "general"
+      ],
+      "entities": {},
+      "patterns": {
+        "correlation_score": 0.6600000000000001,
+        "priority": "medium",
+        "sentiment": "neutral",
+        "has_attachments": true,
+        "attachment_types": [
+          "image",
+          "image",
+          "image",
+          "image"
+        ]
+      },
+      "context": {
+        "sender": "",
+        "recipients_count": 0,
+        "body_length": 544,
+        "subject_length": 26
+      },
+      "timestamp": "2025-08-17T17:28:05.943903"
+    },
+    {
+      "id": "84b232a5fbdefa7981127427527beb20",
+      "subject": "FW: 901910 Chester Noah Field",
+      "body_summary": "FW: 901910 Chester Noah Field",
+      "categories": [
+        "general"
+      ],
+      "entities": {},
+      "patterns": {
+        "correlation_score": 0.5866666666666667,
+        "priority": "medium",
+        "sentiment": "neutral",
+        "has_attachments": false,
+        "attachment_types": []
+      },
+      "context": {
+        "sender": "",
+        "recipients_count": 0,
+        "body_length": 1270,
+        "subject_length": 29
+      },
+      "timestamp": "2025-08-17T17:27:05.464805"
+    },
+    {
+      "id": "63facaf8fc33b027554666dc7b9e3a9c",
+      "subject": "Company - 87516128368",
+      "body_summary": "Good Afternoon,\r\n \r\nPlease remove George McEwen from the above scheme effective from the 12th Jan...",
+      "categories": [
+        "urgent",
+        "has_attachments",
+        "media"
+      ],
+      "entities": {
+        "emails": [
+          "kevin@ihcs.co.uk"
+        ],
+        "phones": [
+          "7516128368"
+        ],
+        "dates": [],
+        "money": []
+      },
+      "patterns": {
+        "correlation_score": 0.0,
+        "priority": "medium",
+        "sentiment": "neutral",
+        "has_attachments": true,
+        "attachment_types": [
+          "image",
+          "image",
+          "image"
+        ]
+      },
+      "context": {
+        "sender": "",
+        "recipients_count": 0,
+        "body_length": 1104,
+        "subject_length": 21
+      },
+      "timestamp": "2025-08-17T16:58:25.076364"
+    },
+    {
+      "id": "998492105164679aed561ca2de64387d",
+      "subject": "FW: 0427654368 Stella Foster ",
+      "body_summary": "Hi team\r\n \r\nPlease lapse the above member from 01/01/24\r\n \r\nThanks Allyson",
+      "categories": [
+        "general"
+      ],
+      "entities": {
+        "emails": [],
+        "phones": [
+          "0427654368"
+        ],
+        "dates": [
+          "01/01/24"
+        ],
+        "money": []
+      },
+      "patterns": {
+        "correlation_score": 0.0,
+        "priority": "medium",
+        "sentiment": "neutral",
+        "has_attachments": false,
+        "attachment_types": []
+      },
+      "context": {
+        "sender": "",
+        "recipients_count": 0,
+        "body_length": 82,
+        "subject_length": 29
+      },
+      "timestamp": "2025-08-17T16:58:25.421866"
+    },
+    {
+      "id": "51822430cc98c1ec3c6737fd9dce02ff",
+      "subject": "240610 PMI Arm Porter 55430914316 Leaver Paula Keel",
+      "body_summary": "Please be aware",
+      "categories": [
+        "general"
+      ],
+      "entities": {
+        "emails": [],
+        "phones": [
+          "5430914316"
+        ],
+        "dates": [],
+        "money": []
+      },
+      "patterns": {
+        "correlation_score": 0.33333333333333337,
+        "priority": "medium",
+        "sentiment": "neutral",
+        "has_attachments": false,
+        "attachment_types": []
+      },
+      "context": {
+        "sender": "",
+        "recipients_count": 0,
+        "body_length": 604,
+        "subject_length": 51
+      },
+      "timestamp": "2025-08-17T16:58:24.260603"
+    },
+    {
+      "id": "8497c672b75df8320f3351efb230da36",
+      "subject": "55341230117 Add Dependent (Daniel Ward)",
+      "body_summary": "Good morning Team,\r\n \r\nCan you please action the below:\r\n \r\nDaniel Ward would like to add the fol...",
+      "categories": [
+        "general"
+      ],
+      "entities": {
+        "emails": [],
+        "phones": [
+          "5341230117"
+        ],
+        "dates": [
+          "04-03-94",
+          "16-11-23"
+        ],
+        "money": []
+      },
+      "patterns": {
+        "correlation_score": 0.33333333333333337,
+        "priority": "medium",
+        "sentiment": "neutral",
+        "has_attachments": false,
+        "attachment_types": []
+      },
+      "context": {
+        "sender": "",
+        "recipients_count": 0,
+        "body_length": 580,
+        "subject_length": 39
+      },
+      "timestamp": "2025-08-17T16:58:24.627172"
+    },
+    {
+      "id": "0d28138736578b8385ed9de762d1bcab",
+      "subject": "Mr Denny Robson - BUPA -0631612548",
+      "body_summary": "Hi Team\r\n \r\nCan you please lapse the above member w",
+      "categories": [
+        "general"
+      ],
+      "entities": {
+        "emails": [],
+        "phones": [
+          "0631612548"
+        ],
+        "dates": [
+          "7/4/24"
+        ],
+        "money": []
+      },
+      "patterns": {
+        "correlation_score": 0.0,
+        "priority": "medium",
+        "sentiment": "neutral",
+        "has_attachments": false,
+        "attachment_types": []
+      },
+      "context": {
+        "sender": "",
+        "recipients_count": 0,
+        "body_length": 318,
+        "subject_length": 34
+      },
+      "timestamp": "2025-08-17T16:58:23.021523"
+    },
+    {
+      "id": "dad0a785475a947d9cca98dd9a1f815c",
+      "subject": "55309303468 Dara- Leavers ",
+      "body_summary": "Hello Team,\r\n \r\nWe have a couple of updates to inform you of regarding the PMI offering - see det...",
+      "categories": [
+        "has_attachments",
+        "media"
+      ],
+      "entities": {
+        "emails": [],
+        "phones": [
+          "5309303468"
+        ],
+        "dates": [],
+        "money": []
+      },
+      "patterns": {
+        "correlation_score": 0.34222222222222226,
+        "priority": "medium",
+        "sentiment": "neutral",
+        "has_attachments": true,
+        "attachment_types": [
+          "image"
+        ]
+      },
+      "context": {
+        "sender": "",
+        "recipients_count": 0,
+        "body_length": 1282,
+        "subject_length": 26
+      },
+      "timestamp": "2025-08-17T16:58:23.338780"
+    },
+    {
+      "id": "16f5cf68f9a567d89c94ba32b734cfb3",
+      "subject": "55765921421  Joiner (Harvey Water)",
+      "body_summary": "Hello Team,\r\n \r\nCould you please add Harvey Water, his wife (Zoe Patt) and son (Francis Water) to...",
+      "categories": [
+        "general"
+      ],
+      "entities": {
+        "emails": [],
+        "phones": [
+          "5765921421"
+        ],
+        "dates": [],
+        "money": []
+      },
+      "patterns": {
+        "correlation_score": 0.3666666666666667,
+        "priority": "medium",
+        "sentiment": "neutral",
+        "has_attachments": false,
+        "attachment_types": []
+      },
+      "context": {
+        "sender": "",
+        "recipients_count": 0,
+        "body_length": 600,
+        "subject_length": 34
+      },
+      "timestamp": "2025-08-17T16:58:23.807384"
+    },
+    {
+      "id": "2d7f94918e5d157cc5f4d2b3a67d4a05",
+      "subject": "0733861468 - duplicate member needs to be lapsed wef inception",
+      "body_summary": "Hi tea,\r\n \r\nCan we please lapse 0709876468 Joan Smith wef inception as they have duplicated in error",
+      "categories": [
+        "general"
+      ],
+      "entities": {
+        "emails": [
+          "Businesssupporthub@bupa.com"
+        ],
+        "phones": [
+          "0733861468",
+          "0709876468",
+          "345 266 1482"
+        ],
+        "dates": [],
+        "money": []
+      },
+      "patterns": {
+        "correlation_score": 0.22000000000000003,
+        "priority": "medium",
+        "sentiment": "neutral",
+        "has_attachments": false,
+        "attachment_types": []
+      },
+      "context": {
+        "sender": "",
+        "recipients_count": 0,
+        "body_length": 596,
+        "subject_length": 62
+      },
+      "timestamp": "2025-08-17T16:58:22.145611"
+    },
+    {
+      "id": "322a10475fddd164bb0b74725b740df9",
+      "subject": "Complimentary Dependant Membership",
+      "body_summary": "Hello,\r\n \r\nWe have an employee who would like to add their new baby to the PMI scheme",
+      "categories": [
+        "has_attachments",
+        "media"
+      ],
+      "entities": {
+        "emails": [
+          "stacey.mccoy@fanduel.com"
+        ],
+        "phones": [
+          "1234782157",
+          "4525967294"
+        ],
+        "dates": [
+          "13/02/2024"
+        ],
+        "money": []
+      },
+      "patterns": {
+        "correlation_score": 1.0,
+        "priority": "medium",
+        "sentiment": "neutral",
+        "has_attachments": true,
+        "attachment_types": [
+          "image",
+          "image"
+        ]
+      },
+      "context": {
+        "sender": "",
+        "recipients_count": 0,
+        "body_length": 447,
+        "subject_length": 34
+      },
+      "timestamp": "2025-08-17T16:58:22.537131"
+    },
+    {
+      "id": "9ee0006bef8fc347814af62176a1a88c",
+      "subject": "FW: [SUSPECTED SPAM] Keer Group Limited - 55216049075",
+      "body_summary": "Hi There\r\n \r\nI am writing to notify you that Joseph Wells left the business on 31/07/23",
+      "categories": [
+        "invoice",
+        "contract"
+      ],
+      "entities": {
+        "emails": [],
+        "phones": [
+          "5216049075"
+        ],
+        "dates": [
+          "31/07/23"
+        ],
+        "money": []
+      },
+      "patterns": {
+        "correlation_score": 0.0,
+        "priority": "medium",
+        "sentiment": "neutral",
+        "has_attachments": false,
+        "attachment_types": []
+      },
+      "context": {
+        "sender": "",
+        "recipients_count": 0,
+        "body_length": 536,
+        "subject_length": 53
+      },
+      "timestamp": "2025-08-17T16:58:21.331453"
+    },
+    {
+      "id": "32cae6b7b9dda402ce836ba7a22abd86",
+      "subject": "Plane Research Ltd - 553145812657",
+      "body_summary": "Hi all,\r\n \r\nPlease see the below new joiners to the above group scheme:\r\n \r\nEFFECTIVE 1ST FEBRUAR...",
+      "categories": [
+        "meeting",
+        "has_attachments",
+        "media"
+      ],
+      "entities": {
+        "emails": [
+          "June.Frost1@healthwisegroup.co.uk"
+        ],
+        "phones": [
+          "3145812657"
+        ],
+        "dates": [
+          "04/06/1982",
+          "03/11/1972",
+          "29/07/2008",
+          "25/10/2010",
+          "22/02/1967",
+          "15/02/1962",
+          "01/11/23"
+        ],
+        "money": []
+      },
+      "patterns": {
+        "correlation_score": 0.0,
+        "priority": "medium",
+        "sentiment": "neutral",
+        "has_attachments": true,
+        "attachment_types": [
+          "image",
+          "image"
+        ]
+      },
+      "context": {
+        "sender": "",
+        "recipients_count": 0,
+        "body_length": 1155,
+        "subject_length": 33
+      },
+      "timestamp": "2025-08-17T16:58:21.742738"
+    },
+    {
+      "id": "4aa1a30ff238d670b4079335aa52fd4b",
+      "subject": "Cui-Lyn Chang (4832589) - ticket number HRC0290658",
+      "body_summary": "Hi Stew, do you mind if we add above person to medical details as follows:  which should start fr...",
+      "categories": [
+        "meeting",
+        "invoice",
+        "urgent"
+      ],
+      "entities": {
+        "emails": [
+          "Cui-Lyn.Chang@wordpay.com",
+          "sammy.king@fisglobal.com"
+        ],
+        "phones": [],
+        "dates": [
+          "19/3/1996"
+        ],
+        "money": []
+      },
+      "patterns": {
+        "correlation_score": 0.1466666666666667,
+        "priority": "medium",
+        "sentiment": "neutral",
+        "has_attachments": false,
+        "attachment_types": []
+      },
+      "context": {
+        "sender": "",
+        "recipients_count": 0,
+        "body_length": 3298,
+        "subject_length": 50
+      },
+      "timestamp": "2025-08-17T16:58:20.125862"
+    },
+    {
+      "id": "69f26dcbf064a645f6d5ae5c12fb5810",
+      "subject": "Polar Express (Europe) Ltd 123456789",
+      "body_summary": "Hi Susan,\r\n \r\nGood day",
+      "categories": [
+        "general"
+      ],
+      "entities": {
+        "emails": [],
+        "phones": [
+          "8974546874"
+        ],
+        "dates": [],
+        "money": []
+      },
+      "patterns": {
+        "correlation_score": 0.0,
+        "priority": "medium",
+        "sentiment": "neutral",
+        "has_attachments": false,
+        "attachment_types": []
+      },
+      "context": {
+        "sender": "",
+        "recipients_count": 0,
+        "body_length": 166,
+        "subject_length": 36
+      },
+      "timestamp": "2025-08-17T16:58:20.498040"
+    },
+    {
+      "id": "214afe1a26829c72d2f755fd62d9cd71",
+      "subject": "FW: 55316176114",
+      "body_summary": "There are 2 future deletions for the new P&O Ferries section, under the PA World policy (59999176...",
+      "categories": [
+        "has_attachments",
+        "media"
+      ],
+      "entities": {
+        "emails": [
+          "Corporatebusinesssupporthub@bupa.com"
+        ],
+        "phones": [
+          "5316176114",
+          "9999176114",
+          "345 3030830",
+          "345 266 1310"
+        ],
+        "dates": [],
+        "money": []
+      },
+      "patterns": {
+        "correlation_score": 0.0,
+        "priority": "medium",
+        "sentiment": "neutral",
+        "has_attachments": true,
+        "attachment_types": [
+          "image",
+          "image",
+          "image"
+        ]
+      },
+      "context": {
+        "sender": "",
+        "recipients_count": 0,
+        "body_length": 567,
+        "subject_length": 15
+      },
+      "timestamp": "2025-08-17T16:58:20.848520"
+    },
+    {
+      "id": "09d4dbe2927a4849f9699c8e853246db",
+      "subject": "00498006587",
+      "body_summary": "Hi \r\n \r\nThe above reg type should be single parent not family please amend , the partner is lapse...",
+      "categories": [
+        "general"
+      ],
+      "entities": {
+        "emails": [],
+        "phones": [
+          "0498006587"
+        ],
+        "dates": [],
+        "money": []
+      },
+      "patterns": {
+        "correlation_score": 0.0,
+        "priority": "medium",
+        "sentiment": "neutral",
+        "has_attachments": false,
+        "attachment_types": []
+      },
+      "context": {
+        "sender": "",
+        "recipients_count": 0,
+        "body_length": 126,
+        "subject_length": 11
+      },
+      "timestamp": "2025-08-17T16:58:19.205476"
+    },
+    {
+      "id": "43f194996a6320e5c9092decce0b3ec9",
+      "subject": "5531545987524 - Make Up Limited",
+      "body_summary": "Hi,\r\n \r\nCan you remove the following members from the above group scheme as per the dates below:-...",
+      "categories": [
+        "urgent",
+        "report",
+        "contract",
+        "has_attachments",
+        "media"
+      ],
+      "entities": {
+        "emails": [],
+        "phones": [
+          "1545987524",
+          "208 013 4782",
+          "800 111 6768"
+        ],
+        "dates": [
+          "01/02/2024",
+          "01/03/2024"
+        ],
+        "money": []
+      },
+      "patterns": {
+        "correlation_score": 0.0,
+        "priority": "medium",
+        "sentiment": "neutral",
+        "has_attachments": true,
+        "attachment_types": [
+          "image"
+        ]
+      },
+      "context": {
+        "sender": "",
+        "recipients_count": 0,
+        "body_length": 2309,
+        "subject_length": 31
+      },
+      "timestamp": "2025-08-17T16:58:19.702277"
+    },
+    {
+      "id": "b94776809fd8a53b5704679248f08e1d",
+      "subject": "FW: 55315549955  HEMA Consulting Ltd",
+      "body_summary": "Hi Guys, \r\n \r\nPlease can the emails address below be added onto the members account so they can u...",
+      "categories": [
+        "general"
+      ],
+      "entities": {
+        "emails": [
+          "Simon.weakes@outlook.com",
+          "Oliweakes@hotmail.com",
+          "liam.walmsley@bupa.com"
+        ],
+        "phones": [
+          "5315549955",
+          "0589111222",
+          "0544787878"
+        ],
+        "dates": [],
+        "money": []
+      },
+      "patterns": {
+        "correlation_score": 0.0,
+        "priority": "medium",
+        "sentiment": "neutral",
+        "has_attachments": false,
+        "attachment_types": []
+      },
+      "context": {
+        "sender": "",
+        "recipients_count": 0,
+        "body_length": 475,
+        "subject_length": 36
+      },
+      "timestamp": "2025-08-17T16:58:18.362346"
+    },
+    {
+      "id": "4eea878593205045541cf2fd4d9c312e",
+      "subject": "Change of Level of Cover for existing members CAS-2221431-K7B3T0",
+      "body_summary": "You don't often get email from people@newday",
+      "categories": [
+        "has_attachments",
+        "media"
+      ],
+      "entities": {
+        "emails": [
+          "people@newday.co.uk",
+          "Ken.munday@newday.co.uk"
+        ],
+        "phones": [
+          "0609666709",
+          "0600845319",
+          "0867517838",
+          "0890431688",
+          "0690121248"
+        ],
+        "dates": [],
+        "money": []
+      },
+      "patterns": {
+        "correlation_score": 0.6495238095238096,
+        "priority": "medium",
+        "sentiment": "neutral",
+        "has_attachments": true,
+        "attachment_types": [
+          "image",
+          "image"
+        ]
+      },
+      "context": {
+        "sender": "",
+        "recipients_count": 0,
+        "body_length": 1917,
+        "subject_length": 64
+      },
+      "timestamp": "2025-08-17T16:58:18.937946"
+    },
+    {
+      "id": "7240574859f3612371a312b820aaebac",
+      "subject": "(KH) Leaver - BUPA - Peter Christmas 0809459",
+      "body_summary": "Please be aware",
+      "categories": [
+        "invoice",
+        "contract"
+      ],
+      "entities": {
+        "emails": [
+          "peter.christmas@costain.com",
+          "hr.action@costain.com"
+        ],
+        "phones": [
+          "6543410001"
+        ],
+        "dates": [
+          "31/08/2024"
+        ],
+        "money": []
+      },
+      "patterns": {
+        "correlation_score": 0.7333333333333336,
+        "priority": "medium",
+        "sentiment": "neutral",
+        "has_attachments": false,
+        "attachment_types": []
+      },
+      "context": {
+        "sender": "",
+        "recipients_count": 0,
+        "body_length": 3071,
+        "subject_length": 44
+      },
+      "timestamp": "2025-08-17T16:58:17.544896"
+    },
+    {
+      "id": "3010f1e6f952746b267e14a36739c9ce",
+      "subject": "Cancel my policy - 0642960854",
+      "body_summary": "Dear Sir/Madam, \r\n \r\nGood afternoon",
+      "categories": [
+        "general"
+      ],
+      "entities": {
+        "emails": [],
+        "phones": [
+          "0642960854",
+          "0642960854"
+        ],
+        "dates": [],
+        "money": []
+      },
+      "patterns": {
+        "correlation_score": 1.0,
+        "priority": "medium",
+        "sentiment": "neutral",
+        "has_attachments": false,
+        "attachment_types": []
+      },
+      "context": {
+        "sender": "",
+        "recipients_count": 0,
+        "body_length": 318,
+        "subject_length": 29
+      },
+      "timestamp": "2025-08-17T16:58:17.945503"
+    },
+    {
+      "id": "5291608a79b0cfafed55d253b9e17b83",
+      "subject": "240610 PMI Towerserve 38543220000 Joiner",
+      "body_summary": "Please be aware",
+      "categories": [
+        "general"
+      ],
+      "entities": {
+        "emails": [],
+        "phones": [
+          "8543220000"
+        ],
+        "dates": [
+          "29/04/2024",
+          "24/05/1987",
+          "04/11/1990",
+          "22/05/2016"
+        ],
+        "money": []
+      },
+      "patterns": {
+        "correlation_score": 0.0,
+        "priority": "medium",
+        "sentiment": "neutral",
+        "has_attachments": false,
+        "attachment_types": []
+      },
+      "context": {
+        "sender": "",
+        "recipients_count": 0,
+        "body_length": 901,
+        "subject_length": 40
+      },
+      "timestamp": "2025-08-17T16:58:16.541259"
+    },
+    {
+      "id": "017e6164c9bbbf51af46ec6997dffa00",
+      "subject": "Change of Address - Equine Design Group Ltd 553121629587 Bert Hainsworth event id 2424214587 CAS-1979196-J4W1D1",
+      "body_summary": "_____  \r\n\r\n  \r\nHi \r\n \r\nMy new address is 2a The Mount, Ponterfract , West Yorkshire , WF8 1ND\r\n \r...",
+      "categories": [
+        "general"
+      ],
+      "entities": {
+        "emails": [
+          "benfrost@equinox-grp.com"
+        ],
+        "phones": [
+          "3121629587",
+          "2424214587",
+          "113 2441300"
+        ],
+        "dates": [],
+        "money": []
+      },
+      "patterns": {
+        "correlation_score": 0.22000000000000003,
+        "priority": "medium",
+        "sentiment": "neutral",
+        "has_attachments": false,
+        "attachment_types": []
+      },
+      "context": {
+        "sender": "",
+        "recipients_count": 0,
+        "body_length": 384,
+        "subject_length": 111
+      },
+      "timestamp": "2025-08-17T16:58:16.853060"
+    },
+    {
+      "id": "e92210a5e91d1dc76adf64bfb8ddee9e",
+      "subject": "Local Instruments Corp (UK) Ltd - Dental policy of Chris Bones",
+      "body_summary": "Dear Team,\r\n \r\nOur employee, Chris Bones (membership number: 0215442975) , would like to change h...",
+      "categories": [
+        "has_attachments",
+        "media"
+      ],
+      "entities": {
+        "emails": [
+          "hrgo@ni.com"
+        ],
+        "phones": [
+          "0215442975"
+        ],
+        "dates": [],
+        "money": []
+      },
+      "patterns": {
+        "correlation_score": 0.20952380952380953,
+        "priority": "medium",
+        "sentiment": "neutral",
+        "has_attachments": true,
+        "attachment_types": [
+          "image",
+          "image"
+        ]
+      },
+      "context": {
+        "sender": "",
+        "recipients_count": 0,
+        "body_length": 861,
+        "subject_length": 62
+      },
+      "timestamp": "2025-08-17T16:58:15.133323"
+    },
+    {
+      "id": "4f890e5ea9e534e800ef6f4ad5b37912",
+      "subject": " 254416 PMI Paccelya 553142524464 Joiner (Adam Davis)",
+      "body_summary": "Hello Team,\r\n \r\n \r\nWith effect from 01/04/24, can you please add the following:\r\n \r\nAdam Davis \u2013 ...",
+      "categories": [
+        "general"
+      ],
+      "entities": {
+        "emails": [],
+        "phones": [
+          "3142524464"
+        ],
+        "dates": [
+          "01/04/24",
+          "18/09/82",
+          "15/06/89"
+        ],
+        "money": []
+      },
+      "patterns": {
+        "correlation_score": 0.2,
+        "priority": "medium",
+        "sentiment": "neutral",
+        "has_attachments": false,
+        "attachment_types": []
+      },
+      "context": {
+        "sender": "",
+        "recipients_count": 0,
+        "body_length": 492,
+        "subject_length": 53
+      },
+      "timestamp": "2025-08-17T16:58:15.588737"
+    },
+    {
+      "id": "9089c6a6e075893098b7ffa9718fccef",
+      "subject": "FW: 55651237472-Rangers UK Limited",
+      "body_summary": "Hi Team,\r\n \r\nPlease can we remove a duplicated member on this group as soon as possible",
+      "categories": [
+        "general"
+      ],
+      "entities": {
+        "emails": [],
+        "phones": [
+          "5651237472",
+          "0728755838"
+        ],
+        "dates": [],
+        "money": []
+      },
+      "patterns": {
+        "correlation_score": 0.0,
+        "priority": "medium",
+        "sentiment": "neutral",
+        "has_attachments": false,
+        "attachment_types": []
+      },
+      "context": {
+        "sender": "",
+        "recipients_count": 0,
+        "body_length": 191,
+        "subject_length": 34
+      },
+      "timestamp": "2025-08-17T16:58:15.857673"
+    },
+    {
+      "id": "5c402e5640ad39c9f923de3e0cec4763",
+      "subject": "(NP) Leaver  - Anders Hope -1099920",
+      "body_summary": "Please be aware",
+      "categories": [
+        "invoice",
+        "contract",
+        "has_attachments",
+        "media"
+      ],
+      "entities": {
+        "emails": [
+          "hr.action@costain.com"
+        ],
+        "phones": [],
+        "dates": [
+          "05/07/2024"
+        ],
+        "money": []
+      },
+      "patterns": {
+        "correlation_score": 0.6233333333333335,
+        "priority": "medium",
+        "sentiment": "neutral",
+        "has_attachments": true,
+        "attachment_types": [
+          "image",
+          "image",
+          "image",
+          "image",
+          "image"
+        ]
+      },
+      "context": {
+        "sender": "",
+        "recipients_count": 0,
+        "body_length": 3027,
+        "subject_length": 35
+      },
+      "timestamp": "2025-08-17T16:58:14.348725"
+    },
+    {
+      "id": "6205b52119f75a79643161b3b098e0d5",
+      "subject": "XMAS Ltd - Membership amendment",
+      "body_summary": "Hello \r\n \r\nXMAS have mistakenly lapsed Stewart Mellons\u2019s policy please can you reinstate him",
+      "categories": [
+        "contract",
+        "has_attachments",
+        "media"
+      ],
+      "entities": {
+        "emails": [],
+        "phones": [],
+        "dates": [],
+        "money": []
+      },
+      "patterns": {
+        "correlation_score": 0.19555555555555557,
+        "priority": "medium",
+        "sentiment": "neutral",
+        "has_attachments": true,
+        "attachment_types": [
+          "image"
+        ]
+      },
+      "context": {
+        "sender": "",
+        "recipients_count": 0,
+        "body_length": 2494,
+        "subject_length": 31
+      },
+      "timestamp": "2025-08-17T16:58:14.713490"
+    },
+    {
+      "id": "831d5ca9f29b6b7b5bd6ca2749d62470",
+      "subject": "New member enrolment - 553157325674",
+      "body_summary": "Morning team,\r\n \r\nGroup number \u2013  553157325674\r\nProduct \u2013 PMI\r\nWEF \u2013       22/04/2024\r\nClear Inst...",
+      "categories": [
+        "general"
+      ],
+      "entities": {
+        "emails": [],
+        "phones": [
+          "3157325674",
+          "3157325674"
+        ],
+        "dates": [
+          "22/04/2024",
+          "25/03/1995",
+          "22/04/2024"
+        ],
+        "money": []
+      },
+      "patterns": {
+        "correlation_score": 0.8800000000000001,
+        "priority": "medium",
+        "sentiment": "neutral",
+        "has_attachments": false,
+        "attachment_types": []
+      },
+      "context": {
+        "sender": "",
+        "recipients_count": 0,
+        "body_length": 292,
+        "subject_length": 35
+      },
+      "timestamp": "2025-08-17T16:58:13.181410"
+    },
+    {
+      "id": "997db786dceb268c974911500999b7e9",
+      "subject": "[DTL0] - Add new dependent",
+      "body_summary": "Hi team,\r\n \r\nPlease can you add an employee\u2019s new baby to their membership:\r\n \r\nLauren Smith \u2013 01...",
+      "categories": [
+        "has_attachments",
+        "media"
+      ],
+      "entities": {
+        "emails": [],
+        "phones": [
+          "0123789654"
+        ],
+        "dates": [
+          "16/10/2022"
+        ],
+        "money": []
+      },
+      "patterns": {
+        "correlation_score": 0.0,
+        "priority": "medium",
+        "sentiment": "neutral",
+        "has_attachments": true,
+        "attachment_types": [
+          "image"
+        ]
+      },
+      "context": {
+        "sender": "",
+        "recipients_count": 0,
+        "body_length": 599,
+        "subject_length": 26
+      },
+      "timestamp": "2025-08-17T16:58:13.672290"
+    },
+    {
+      "id": "f308338d74a16be733e88145994816e9",
+      "subject": "55312748884 -Lapse: Kenneth Cox",
+      "body_summary": "Hi\r\nPlease lapse member Kenneth Cox 08/09/1978 from the 1st January 2024",
+      "categories": [
+        "contract",
+        "has_attachments",
+        "media"
+      ],
+      "entities": {
+        "emails": [],
+        "phones": [
+          "5312748884",
+          "203 327 5766"
+        ],
+        "dates": [
+          "08/09/1978"
+        ],
+        "money": []
+      },
+      "patterns": {
+        "correlation_score": 0.5866666666666667,
+        "priority": "medium",
+        "sentiment": "neutral",
+        "has_attachments": true,
+        "attachment_types": [
+          "image"
+        ]
+      },
+      "context": {
+        "sender": "",
+        "recipients_count": 0,
+        "body_length": 2984,
+        "subject_length": 31
+      },
+      "timestamp": "2025-08-17T16:58:12.363964"
+    },
+    {
+      "id": "1a5ae90cc66414cc7d45bed7cd32f234",
+      "subject": "FW: 55355441096 - PAL Advisory Ltd",
+      "body_summary": "Hi\r\n \r\nCan you please remove from inception both the OADs under the regs below:\r\n \r\n0744446475\r\n0...",
+      "categories": [
+        "general"
+      ],
+      "entities": {
+        "emails": [],
+        "phones": [
+          "5355441096",
+          "0744446475",
+          "0776346507"
+        ],
+        "dates": [],
+        "money": []
+      },
+      "patterns": {
+        "correlation_score": 0.0,
+        "priority": "medium",
+        "sentiment": "neutral",
+        "has_attachments": false,
+        "attachment_types": []
+      },
+      "context": {
+        "sender": "",
+        "recipients_count": 0,
+        "body_length": 449,
+        "subject_length": 34
+      },
+      "timestamp": "2025-08-17T16:58:12.745704"
+    },
+    {
+      "id": "d7606564a78c20e70f274e294f756fd2",
+      "subject": "FW: (KH) Leaver- BUPA - Richard John Jones 10349",
+      "body_summary": "Please be aware",
+      "categories": [
+        "invoice",
+        "contract"
+      ],
+      "entities": {
+        "emails": [
+          "ricahardj@costain.com",
+          "hr.action@costain.com"
+        ],
+        "phones": [
+          "6543410001"
+        ],
+        "dates": [
+          "31/08/2024"
+        ],
+        "money": []
+      },
+      "patterns": {
+        "correlation_score": 0.6111111111111113,
+        "priority": "medium",
+        "sentiment": "neutral",
+        "has_attachments": false,
+        "attachment_types": []
+      },
+      "context": {
+        "sender": "",
+        "recipients_count": 0,
+        "body_length": 3066,
+        "subject_length": 48
+      },
+      "timestamp": "2025-08-17T16:58:11.463974"
+    },
+    {
+      "id": "cd1ae3ad19764cc099bd03bc59e6c1a3",
+      "subject": "240607 PMI First Partners London Limited 5531999948 Joiners ",
+      "body_summary": "Please be aware",
+      "categories": [
+        "general"
+      ],
+      "entities": {
+        "emails": [],
+        "phones": [
+          "5531999948"
+        ],
+        "dates": [
+          "09/06/24",
+          "06/07/1988",
+          "18/02/63",
+          "03/06/2024",
+          "23/01/1973",
+          "11/08/1983",
+          "01/06/2013",
+          "14/11/2019"
+        ],
+        "money": []
+      },
+      "patterns": {
+        "correlation_score": 0.11428571428571428,
+        "priority": "medium",
+        "sentiment": "neutral",
+        "has_attachments": false,
+        "attachment_types": []
+      },
+      "context": {
+        "sender": "",
+        "recipients_count": 0,
+        "body_length": 900,
+        "subject_length": 60
+      },
+      "timestamp": "2025-08-17T16:58:11.840599"
+    },
+    {
+      "id": "8b994743ae864831f2718508eef06487",
+      "subject": "240607 PMI Celestica Ltd 55300047925 Joiner Edward McPower",
+      "body_summary": "Please be aware",
+      "categories": [
+        "general"
+      ],
+      "entities": {
+        "emails": [],
+        "phones": [
+          "5300047925"
+        ],
+        "dates": [],
+        "money": []
+      },
+      "patterns": {
+        "correlation_score": 0.4888888888888889,
+        "priority": "medium",
+        "sentiment": "neutral",
+        "has_attachments": false,
+        "attachment_types": []
+      },
+      "context": {
+        "sender": "",
+        "recipients_count": 0,
+        "body_length": 1103,
+        "subject_length": 58
+      },
+      "timestamp": "2025-08-17T16:58:10.309071"
+    },
+    {
+      "id": "4e524d41a54c42b5c45aba172928f224",
+      "subject": "240103 PMl Deloise 55390544027 Leaver",
+      "body_summary": "Hi Team,\r\n \r\nPlease can you remove Kate Lowry-Jones from the Bupa scheme effective 04/01/2024",
+      "categories": [
+        "general"
+      ],
+      "entities": {
+        "emails": [],
+        "phones": [
+          "5390544027"
+        ],
+        "dates": [
+          "04/01/2024"
+        ],
+        "money": []
+      },
+      "patterns": {
+        "correlation_score": 0.0,
+        "priority": "medium",
+        "sentiment": "neutral",
+        "has_attachments": false,
+        "attachment_types": []
+      },
+      "context": {
+        "sender": "",
+        "recipients_count": 0,
+        "body_length": 339,
+        "subject_length": 37
+      },
+      "timestamp": "2025-08-17T16:58:10.763512"
+    },
+    {
+      "id": "f558ec92081c66e5478af76fdcc0253f",
+      "subject": "FW: Enrolling a baby ",
+      "body_summary": "Please be aware",
+      "categories": [
+        "has_attachments",
+        "media"
+      ],
+      "entities": {
+        "emails": [
+          "Carla.Barlow@russellreynolds.com"
+        ],
+        "phones": [
+          "0412342855"
+        ],
+        "dates": [
+          "18/3/2024"
+        ],
+        "money": []
+      },
+      "patterns": {
+        "correlation_score": 0.0,
+        "priority": "medium",
+        "sentiment": "neutral",
+        "has_attachments": true,
+        "attachment_types": [
+          "image",
+          "image",
+          "image"
+        ]
+      },
+      "context": {
+        "sender": "",
+        "recipients_count": 0,
+        "body_length": 1149,
+        "subject_length": 21
+      },
+      "timestamp": "2025-08-17T16:58:08.977270"
+    },
+    {
+      "id": "b83ce57319ba1640166e3e33adf2d670",
+      "subject": "FW: Partners Management LLP - 35055991111/35011118004 - Add new member",
+      "body_summary": "Hi there,\r\n \r\nCould you please add to the member Simona Cojanu's plan, her son",
+      "categories": [
+        "report"
+      ],
+      "entities": {
+        "emails": [],
+        "phones": [
+          "5055991111",
+          "5011118004",
+          "0590056435",
+          "0599090929"
+        ],
+        "dates": [
+          "10/02/23",
+          "01/01/2024"
+        ],
+        "money": [
+          "023 Eur"
+        ]
+      },
+      "patterns": {
+        "correlation_score": 0.17600000000000005,
+        "priority": "medium",
+        "sentiment": "neutral",
+        "has_attachments": false,
+        "attachment_types": []
+      },
+      "context": {
+        "sender": "",
+        "recipients_count": 0,
+        "body_length": 601,
+        "subject_length": 70
+      },
+      "timestamp": "2025-08-17T16:58:09.833397"
+    },
+    {
+      "id": "90f8c5b30104e761a47d6dccf7357c48",
+      "subject": "Restaurants Limited 55313157093 Select Key \u00a31000 OP, MH ",
+      "body_summary": "Hi,\r\n\r\nPlease action the amendment below, ref the above group",
+      "categories": [
+        "contract",
+        "has_attachments",
+        "media"
+      ],
+      "entities": {
+        "emails": [
+          "bing.ding@gmail.com",
+          "harold.bishop@mercermarshbenefits.com"
+        ],
+        "phones": [
+          "5313157093"
+        ],
+        "dates": [
+          "20/05/1976",
+          "02/01/2024"
+        ],
+        "money": []
+      },
+      "patterns": {
+        "correlation_score": 0.1866666666666667,
+        "priority": "medium",
+        "sentiment": "neutral",
+        "has_attachments": true,
+        "attachment_types": [
+          "image",
+          "image"
+        ]
+      },
+      "context": {
+        "sender": "",
+        "recipients_count": 0,
+        "body_length": 1506,
+        "subject_length": 56
+      },
+      "timestamp": "2025-08-17T16:58:08.436086"
+    },
+    {
+      "id": "d2881fad96a839cc42ca43eba3e5da6d",
+      "subject": "Bupa membership 07102856984",
+      "body_summary": "Good day, \r\n \r\nI have insurance with you (07102856984) through my employer (port of London Author...",
+      "categories": [
+        "urgent",
+        "has_attachments",
+        "media"
+      ],
+      "entities": {
+        "emails": [],
+        "phones": [
+          "7102856984",
+          "7102856984"
+        ],
+        "dates": [],
+        "money": []
+      },
+      "patterns": {
+        "correlation_score": 0.4,
+        "priority": "medium",
+        "sentiment": "neutral",
+        "has_attachments": true,
+        "attachment_types": [
+          "image"
+        ]
+      },
+      "context": {
+        "sender": "",
+        "recipients_count": 0,
+        "body_length": 1102,
+        "subject_length": 27
+      },
+      "timestamp": "2025-08-17T16:58:07.247066"
+    },
+    {
+      "id": "cd25c953b35562ab6aae835d99484a69",
+      "subject": "FW: (KH) Leaver - BUPA - Sandra Walker ",
+      "body_summary": "Please be aware",
+      "categories": [
+        "invoice",
+        "contract"
+      ],
+      "entities": {
+        "emails": [
+          "walker.hd@gmail.com",
+          "hr.action@costain.com"
+        ],
+        "phones": [
+          "6588810001"
+        ],
+        "dates": [
+          "07/06/24"
+        ],
+        "money": []
+      },
+      "patterns": {
+        "correlation_score": 0.5866666666666667,
+        "priority": "medium",
+        "sentiment": "neutral",
+        "has_attachments": false,
+        "attachment_types": []
+      },
+      "context": {
+        "sender": "",
+        "recipients_count": 0,
+        "body_length": 3047,
+        "subject_length": 39
+      },
+      "timestamp": "2025-08-17T16:58:07.965943"
+    },
+    {
+      "id": "2c956495b3822375ec8674676124b442",
+      "subject": "Adding new born baby to Bupa cover ",
+      "body_summary": "Hello Bupa Team,\r\n \r\nCould you please assist us with updating our employee\u2019s medical insurance co...",
+      "categories": [
+        "has_attachments"
+      ],
+      "entities": {
+        "emails": [
+          "membershipadmin@bupa.com",
+          "membershipadmin@bupa.com",
+          "hr.support@avanade.com",
+          "hr.support@avanade.com"
+        ],
+        "phones": [
+          "5514177985",
+          "7053428377"
+        ],
+        "dates": [
+          "20/08/1982"
+        ],
+        "money": []
+      },
+      "patterns": {
+        "correlation_score": 0.6133333333333333,
+        "priority": "medium",
+        "sentiment": "neutral",
+        "has_attachments": true,
+        "attachment_types": [
+          "other",
+          "other"
+        ]
+      },
+      "context": {
+        "sender": "",
+        "recipients_count": 0,
+        "body_length": 1568,
+        "subject_length": 35
+      },
+      "timestamp": "2025-08-17T16:58:06.810176"
+    }
+  ]
+}

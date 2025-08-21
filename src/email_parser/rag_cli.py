@@ -29,7 +29,7 @@ class RAGKnowledgeManager:
         
         self.knowledge_base_path = Path(knowledge_base_path)
         self.rag_engine = EmailRAGEngine(knowledge_base_path=knowledge_base_path)
-        self.email_parser = EmailParser(use_rag=True, knowledge_base_path=knowledge_base_path)
+        self.email_parser = EmailParser(use_rag=True, use_ai=True, use_local=True, knowledge_base_path=knowledge_base_path)
     
     def import_emails_from_folder(self, folder_path: str, file_pattern: str = "*.msg") -> Dict[str, Any]:
         """Import all emails from a folder into the knowledge base"""
@@ -52,7 +52,7 @@ class RAGKnowledgeManager:
                 print(f"   Processing: {email_file.name}")
                 
                 # Parse email with RAG disabled during import to avoid circular dependency
-                temp_parser = EmailParser(use_rag=False)
+                temp_parser = EmailParser(use_rag=False, use_ai=True, use_local=True)
                 email_content = temp_parser.parse_msg_file(email_file)
                 
                 if email_content:
@@ -168,7 +168,7 @@ class RAGKnowledgeManager:
         """Test RAG retrieval with sample content"""
         try:
             # Parse test email
-            temp_parser = EmailParser(use_rag=True, knowledge_base_path=str(self.knowledge_base_path))
+            temp_parser = EmailParser(use_rag=True, use_ai=True, use_local=True, knowledge_base_path=str(self.knowledge_base_path))
             
             # Create a mock email content for testing
             from datetime import datetime

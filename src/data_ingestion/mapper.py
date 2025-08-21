@@ -172,6 +172,12 @@ class ConfigurableDataIngestionMapper:
                 header_row = template_config.get("header_row", 0)
                 read_kwargs["header"] = header_row
                 
+                # Add engine specification for better compatibility
+                if file_ext == '.xls':
+                    read_kwargs["engine"] = 'xlrd'
+                elif file_ext == '.xlsx':
+                    read_kwargs["engine"] = 'openpyxl'
+                
                 df = pd.read_excel(file_path, **read_kwargs)
                 file_type = file_ext[1:]  # Remove the dot
                 
@@ -184,6 +190,13 @@ class ConfigurableDataIngestionMapper:
                 
             return df, file_type
             
+        except ImportError as e:
+            if 'xlrd' in str(e) or 'openpyxl' in str(e):
+                logger.error(f"Missing required library for reading {file_ext} files. Please install: pip install xlrd openpyxl")
+                raise ImportError(f"Missing Excel library. Install with: pip install xlrd openpyxl")
+            else:
+                logger.error(f"Import error reading file {file_path}: {e}")
+                raise
         except Exception as e:
             logger.error(f"Error reading file {file_path}: {e}")
             raise

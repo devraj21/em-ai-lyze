@@ -260,17 +260,19 @@ class EmailRAGEngine:
                 if results['ids'] and results['ids'][0]:
                     for i, email_id in enumerate(results['ids'][0]):
                         distance = results['distances'][0][i] if results['distances'] else 1.0
-                        similarity = max(0.0, 1.0 - distance)  # Convert distance to similarity
                         
-                        if similarity > 0.3:  # Only include reasonably similar emails
+                        # For cosine distance, smaller distance = more similar
+                        # Accept results with reasonable distance (< 2.0)
+                        if distance < 2.0:  # More lenient threshold for search results
                             metadata = self._get_metadata(email_id)
                             if metadata:
                                 similar_emails.append(metadata)
                     
-                    # Calculate average similarity as confidence
+                    # Calculate confidence based on distance (lower distance = higher confidence)
                     if results['distances'] and results['distances'][0]:
                         avg_distance = sum(results['distances'][0]) / len(results['distances'][0])
-                        confidence_score = max(0.0, 1.0 - avg_distance)
+                        # Use inverse relationship for confidence: closer = higher confidence
+                        confidence_score = max(0.1, min(1.0, 2.0 - avg_distance))
             
             # Fallback: category-based retrieval
             if not similar_emails and categories:

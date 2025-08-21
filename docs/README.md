@@ -77,6 +77,63 @@ Welcome to the Em-AI-lyze documentation. This AI-powered email analysis tool pro
 - `src/email_parser/rag_cli.py` - RAG management CLI
 - `src/email_parser/main.py` - MCP server entry point
 
+## 🔄 Email Processing Flow
+
+```mermaid
+flowchart LR
+    subgraph "Input"
+        MSG["📧 .msg Email File"]
+    end
+    
+    subgraph "Core Processing"
+        PARSE["📋 Extract Basic Data<br/>Subject, Sender, Body"]
+        ATTACH["📎 Process Attachments<br/>Content Extraction"]
+        ENTITY["🔍 Entity Extraction<br/>Emails, Dates, Money"]
+    end
+    
+    subgraph "AI Enhancement"
+        LANG["🤖 LangExtract<br/>Smart Analysis"]
+        SENT["😊 Sentiment Analysis"]
+        CAT["🏷️ Category Assignment"]
+        PRIOR["⚡ Priority Detection"]
+    end
+    
+    subgraph "RAG Processing"
+        SEARCH["🔍 Vector Search<br/>Find Similar Emails"]
+        CONTEXT["📚 Context Retrieval<br/>Historical Patterns"]
+        SUGGEST["💡 Smart Suggestions<br/>Categories & Actions"]
+    end
+    
+    subgraph "Output"
+        JSON["📄 JSON Export"]
+        STRUCT["📊 Structured Data"]
+        STORE["💾 Knowledge Base<br/>Storage"]
+    end
+    
+    MSG --> PARSE
+    PARSE --> ATTACH
+    PARSE --> ENTITY
+    
+    ENTITY --> LANG
+    LANG --> SENT
+    LANG --> CAT
+    LANG --> PRIOR
+    
+    CAT --> SEARCH
+    SEARCH --> CONTEXT
+    CONTEXT --> SUGGEST
+    
+    PRIOR --> STRUCT
+    SUGGEST --> STRUCT
+    STRUCT --> JSON
+    STRUCT --> STORE
+    
+    style MSG fill:#e3f2fd
+    style LANG fill:#e8f5e8
+    style SEARCH fill:#fce4ec
+    style JSON fill:#fff3e0
+```
+
 ## 📖 Feature Matrix
 
 | Feature | Basic | AI Enhanced | RAG Enhanced |
@@ -127,14 +184,51 @@ python -m src.email_parser.rag_cli stats
 
 ## 🏗️ Architecture Overview
 
-```
-Em-AI-lyze Architecture
-├── CLI Layer (cli.py, rag_cli.py)
-├── MCP Server Layer (mcp_server.py)
-├── Core Parser Layer (parser.py)
-├── AI Enhancement Layer (ai_extractor.py)
-├── RAG Engine Layer (rag_engine.py)
-└── Storage Layer (ChromaDB, SQLite)
+```mermaid
+graph TB
+    subgraph "User Interfaces"
+        CLI["🖥️ CLI Layer<br/>cli.py, rag_cli.py"]
+        UI["🌐 Streamlit UI<br/>streamlit_ui.py"]
+        MCP["🔌 MCP Server<br/>mcp_server.py"]
+    end
+    
+    subgraph "Core Processing"
+        PARSER["📧 Email Parser<br/>parser.py"]
+        AI["🤖 AI Enhancement<br/>ai_extractor.py"]
+        RAG["🧠 RAG Engine<br/>rag_engine.py"]
+    end
+    
+    subgraph "Storage Layer"
+        SQLITE["📦 SQLite<br/>Metadata"]
+        CHROMA["🔗 ChromaDB<br/>Vector Embeddings"]
+        FILES["📁 File System<br/>Knowledge Base"]
+    end
+    
+    subgraph "External AI"
+        OLLAMA["🏠 Ollama<br/>Local Models"]
+        CLOUD["☁️ Cloud AI<br/>Gemini"]
+    end
+    
+    CLI --> PARSER
+    UI --> PARSER
+    MCP --> PARSER
+    
+    PARSER --> AI
+    PARSER --> RAG
+    
+    AI --> OLLAMA
+    AI --> CLOUD
+    
+    RAG --> SQLITE
+    RAG --> CHROMA
+    RAG --> FILES
+    
+    style CLI fill:#e1f5fe
+    style UI fill:#e8f5e8
+    style MCP fill:#fff3e0
+    style PARSER fill:#f3e5f5
+    style AI fill:#e0f2f1
+    style RAG fill:#fce4ec
 ```
 
 ## 🌟 Key Benefits
@@ -166,6 +260,54 @@ Em-AI-lyze Architecture
 - Comprehensive logging
 - Performance optimization
 - Security best practices
+
+## 🧠 RAG Knowledge Base Architecture
+
+```mermaid
+graph TD
+    subgraph "Email Input"
+        EMAIL1["📧 Email 1<br/>Budget Meeting"]
+        EMAIL2["📧 Email 2<br/>Contract Review"]
+        EMAIL3["📧 Email 3<br/>Invoice Processing"]
+    end
+    
+    subgraph "Processing Pipeline"
+        EXTRACT["🔍 Extract Features<br/>Subject + Body + Entities"]
+        EMBED["🔢 Generate Embeddings<br/>Sentence Transformers"]
+        PARSE["📋 Parse Metadata<br/>Categories + Entities"]
+    end
+    
+    subgraph "Storage Layer"
+        CHROMA[("🔗 ChromaDB<br/>Vector Embeddings<br/>Semantic Search")]
+        SQLITE[("📦 SQLite DB<br/>Metadata<br/>Categories, Entities")]
+    end
+    
+    subgraph "Query Processing"
+        QUERY["🔍 User Query<br/>'budget meeting'"]
+        SEARCH["🎯 Vector Similarity<br/>Find Related Emails"]
+        RESULTS["📊 Ranked Results<br/>Confidence Scores"]
+    end
+    
+    EMAIL1 --> EXTRACT
+    EMAIL2 --> EXTRACT
+    EMAIL3 --> EXTRACT
+    
+    EXTRACT --> EMBED
+    EXTRACT --> PARSE
+    
+    EMBED --> CHROMA
+    PARSE --> SQLITE
+    
+    QUERY --> SEARCH
+    SEARCH --> CHROMA
+    CHROMA --> RESULTS
+    SQLITE --> RESULTS
+    
+    style CHROMA fill:#fce4ec
+    style SQLITE fill:#e3f2fd
+    style SEARCH fill:#e8f5e8
+    style RESULTS fill:#fff3e0
+```
 
 ## 📊 Use Cases
 
